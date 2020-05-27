@@ -73,7 +73,7 @@
                 </li> 
                 {% endif %}
                 {% if assignment_task_filename %}
-            <a href="{{url_for('files.download_assignment_file', assignment_id = assignment['id'])}}">
+            <a href="{{url_for('assignments.download_assignment_file', assignment_id = assignment['id'])}}">
               <li class="list-inline-item">
                 <i class="fa fa-info-circle" aria-hidden="true">
                 </i> {{assignment_task_filename}}
@@ -132,7 +132,7 @@
               </i> due on {{assignment['due_date'].strftime('%A')}}, {{assignment['humanized_due_date']}}
             </li>
             {% if assignment['assignment_task_filename'] %}
-            <a href="{{url_for('files.download_assignment_file', assignment_id = assignment['id'])}}">
+            <a href="{{url_for('assignments.download_assignment_file', assignment_id = assignment['id'])}}">
               <li class="list-inline-item">
                 <i class="fa fa-info-circle" aria-hidden="true">
                 </i> {{ assignment['assignment_task_filename']}}

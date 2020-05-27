@@ -1,13 +1,26 @@
+from flask import send_from_directory, current_app
 from flask_login import current_user
 
 import app.models
 from app import db
-from app.models import Upload, Download, Assignment, User, Comment, AssignmentTaskFile, Turma, Enrollment, PeerReviewForm
+from app.models import Upload, Download, Assignment, User, Comment, Turma, Enrollment, PeerReviewForm
 from app.files import models
 
 from datetime import datetime, date
 from dateutil import tz
 import arrow, json, time
+
+class AssignmentTaskFile(db.Model):
+	__table_args__ = {'sqlite_autoincrement': True}
+	id = db.Column(db.Integer, primary_key=True)
+	original_filename = db.Column(db.String(140))
+	filename = db.Column(db.String(140))
+	timestamp = db.Column(db.DateTime, index=True, default=datetime.now())
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	
+	def __repr__(self):
+		return '<Assignment Task File {}>'.format(self.filename)		
+
 
 def get_assignment_info (assignment_id = False): 
 	assignments_array = []
@@ -282,3 +295,19 @@ def last_incoming_peer_review_timestamp (user_id):
 		return arrow.get(latest_incoming_peer_review, tz.gettz('Asia/Hong_Kong')).humanize() 
 	else: return False	
 
+
+def download_assignment_task_file (assignment_id):
+	if db.session.query(Assignment, AssignmentTaskFile).join(
+		AssignmentTaskFile, Assignment.assignment_task_file_id ==  AssignmentTaskFile.id).filter(
+		Assignment.id == assignment_id).first() is not None:
+		
+		result = db.session.query(Assignment, AssignmentTaskFile).join(
+		AssignmentTaskFile, Assignment.assignment_task_file_id ==  AssignmentTaskFile.id).filter(
+		Assignment.id == assignment_id).first()
+		
+		return send_from_directory(filename=result.AssignmentTaskFile.filename,
+								   directory=current_app.config['UPLOAD_FOLDER'],
+								   as_attachment = True,
+								   attachment_filename = result.AssignmentTaskFile.original_filename)
+	else:
+		return False

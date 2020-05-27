@@ -1,11 +1,12 @@
 from flask import render_template, flash, redirect, url_for, request, abort, current_app, session, Response
 from flask_login import current_user, login_required
 
-from app.assignments import bp, models, forms
-from app.assignments.forms import TurmaCreationForm, AssignmentCreationForm, LessonForm
+from . import bp, models, forms
+from .forms import TurmaCreationForm, AssignmentCreationForm, LessonForm
+from .models import AssignmentTaskFile
 
 from app.files import models
-from app.models import Assignment, Upload, Comment, Turma, User, AssignmentTaskFile, Enrollment, PeerReviewForm, CommentFileUpload, Lesson, AttendanceCode, LessonAttendance
+from app.models import Assignment, Upload, Comment, Turma, User, Enrollment, PeerReviewForm, CommentFileUpload, Lesson, AttendanceCode, LessonAttendance
 from wtforms import SubmitField
 import app.models
 
@@ -24,7 +25,7 @@ def view_assignments():
 		# Get admin view with all assignments
 		clean_assignments_array = app.assignments.models.get_assignment_info()
 		classes = app.assignments.models.get_all_class_info()
-		return render_template('assignments/view_assignments.html',
+		return render_template('view_assignments.html',
 							   assignments_array = clean_assignments_array,
 							   admin = True,
 							   classes=classes)
@@ -33,10 +34,10 @@ def view_assignments():
 		if Enrollment.query.filter(Enrollment.user_id==current_user.id).first() is not None:
 			# Get assignments for this user
 			clean_assignments_array = app.assignments.models.get_user_assignment_info (current_user.id)
-			return render_template('assignments/view_assignments.html', assignmentsArray = clean_assignments_array)
+			return render_template('view_assignments.html', assignmentsArray = clean_assignments_array)
 		else:
 			flash('You are not part of any class and can not see any assignments. Ask your tutor for help to join a class.', 'warning')
-			return render_template('assignments/view_assignments.html') # User isn't part of any class - display no assignments
+			return render_template('view_assignments.html') # User isn't part of any class - display no assignments
 	abort (403)
 
 
@@ -50,13 +51,26 @@ def view_assignment_details(assignment_id):
 		completed_assignments = Upload.query.filter(Upload.assignment_id == assignment_id).all()
 		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
 		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
-		return render_template('assignments/view_assignment_details.html',
+		return render_template('view_assignment_details.html',
 							   assignment_student_info = assignment_student_info,
 							   assignment_id = assignment_id,
 							   assignment_info = assignment_info
 							   )
 	abort (403)
 
+
+# Route to download an assignment information file
+@bp.route('/download/taskfile/<assignment_id>')
+@login_required
+def download_assignment_file(assignment_id):
+	# Check if the user is part of this file's class
+	if app.models.is_admin(current_user.username) or db.session.query(
+		Enrollment, Assignment).join(
+		Assignment, Enrollment.turma_id == Assignment.target_turma_id).filter(
+		Enrollment.user_id == current_user.id).filter(
+		Assignment.id == assignment_id).first() is not None:
+			return app.assignments.models.download_assignment_task_file (assignment_id)
+	abort (403)
 
 # Download all uploads of an assignments
 @bp.route("/download/<assignment_id>", methods=['GET'])
@@ -103,7 +117,7 @@ def create_assignment():
 			app.assignments.models.new_assignment_from_form(form)
 			flash('Assignment successfully created!', 'success')
 			return redirect(url_for('assignments.view_assignments'))
-		return render_template('assignments/assignment_form.html', title='Create Assignment', form=form)
+		return render_template('assignment_form.html', title='Create Assignment', form=form)
 	abort(403)
 	
 # Admin page to edit assignments
@@ -121,7 +135,7 @@ def edit_assignment(assignment_id):
 			db.session.commit()
 			flash('Assignment successfully edited!', 'success')
 			return redirect(url_for('assignments.view_assignments'))
-		return render_template('assignments/assignment_form.html', title='Edit Assignment', form=form)
+		return render_template('assignment_form.html', title='Edit Assignment', form=form)
 	abort(403)
 	
 
@@ -193,7 +207,7 @@ def create_peer_review(assignment_id):
 		form_data = PeerReviewForm.query.get(peer_review_form_id).serialised_form_data
 		form_loader = app.assignments.formbuilder.formLoader(form_data, (url_for('assignments.create_peer_review', assignment_id=assignment_id)))
 		render_form = form_loader.render_form()
-		return render_template('assignments/form_builder_render.html', title='Submit peer review', render_form=render_form)
+		return render_template('form_builder_render.html', title='Submit peer review', render_form=render_form)
 		
 
 # Display an empty review feedback form
@@ -298,7 +312,7 @@ def view_peer_review(comment_id):
 															 submit_label = 'Return',
 															 data_array = form_contents)
 		render_form = form_loader.render_form()
-		return render_template('assignments/form_builder_render.html',
+		return render_template('form_builder_render.html',
 							   render_form=render_form, title = 'Peer review',
 							   comment_file_upload = comment_file_upload)
 		
@@ -327,7 +341,7 @@ def download_comment_file_upload(comment_file_upload_id):
 ############# Peer review forms builder routes
 @bp.route("/form/builder")
 def form_builder():
-	return render_template('assignments/form_builder_index.html')
+	return render_template('form_builder_index.html')
 
 @bp.route('/form/save', methods=['POST'])
 def save():
@@ -363,7 +377,7 @@ def render(form_id = False):
 	form_loader = app.assignments.formbuilder.formLoader(form_data, (url_for('assignments.submit')))
 	render_form = form_loader.render_form()
 	print (render_form)
-	return render_template('assignments/form_builder_render.html', render_form=render_form)
+	return render_template('form_builder_render.html', render_form=render_form)
 
 @bp.route('/form/delete/<form_id>')
 def delete_peer_review_form(form_id):
@@ -394,7 +408,7 @@ def add_peer_review_form():
 def peer_review_form_admin():
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
 		peer_review_forms = PeerReviewForm.query.all()
-		return render_template('assignments/manage_peer_review_forms.html', peer_review_forms=peer_review_forms)
+		return render_template('manage_peer_review_forms.html', peer_review_forms=peer_review_forms)
 	abort (403)
 
 	
