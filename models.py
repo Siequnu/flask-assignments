@@ -214,16 +214,6 @@ def new_assignment_from_form (form):
 		db.session.commit()
 
 def delete_assignment_from_id (assignment_id):	
-	# Get a list of any task files
-	assignment_task_file_id = Assignment.query.get(assignment_id).assignment_task_file_id
-	
-	# Delete assignment first, as this references the task files (foreign key)
-	Assignment.query.filter_by(id=assignment_id).delete()
-	
-	# Delete assignment_task_file, if it exists
-	if assignment_task_file_id is not None:
-		AssignmentTaskFile.query.filter_by(id=assignment_task_file_id).delete()
-	
 	# Delete all upload records for this assignment
 	assignment_uploads = Upload.query.filter_by(assignment_id=assignment_id).all()
 	if assignment_uploads is not None:
@@ -234,6 +224,17 @@ def delete_assignment_from_id (assignment_id):
 	if comments is not None:
 		for comment in comments:
 			db.session.delete(comment)
+	
+	# Get a list of any task files
+	assignment_task_file_id = Assignment.query.get(assignment_id).assignment_task_file_id
+	
+	# Delete assignment first, as this references the task files (foreign key)
+	Assignment.query.filter_by(id=assignment_id).delete()
+	
+	# Delete assignment_task_file, if it exists
+	if assignment_task_file_id is not None:
+		AssignmentTaskFile.query.filter_by(id=assignment_task_file_id).delete()
+		
 	db.session.commit()
 	return True
 
