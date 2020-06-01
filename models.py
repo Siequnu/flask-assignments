@@ -3,7 +3,7 @@ from flask_login import current_user
 
 import app.models
 from app import db
-from app.models import Upload, Download, Assignment, User, Comment, Turma, Enrollment, PeerReviewForm
+from app.models import Upload, Download, Assignment, User, Comment, Turma, Enrollment, PeerReviewForm, CommentFileUpload
 from app.files import models
 
 from datetime import datetime, date
@@ -251,6 +251,15 @@ def delete_all_comments_from_upload_id (upload_id):
 	comments = Comment.query.filter_by(file_id=upload_id).all()
 	if comments is not None:
 		for comment in comments:
+			
+			# Delete any comment_file_uploads associated with any comments
+			comment_file_uploads = CommentFileUpload.query.filter_by(comment_id=comment.id).all()
+			if comment_file_uploads is not None:
+				for upload in comment_file_uploads:
+					db.session.delete(upload)
+					db.session.commit()
+			
+			# Delete the comment now
 			db.session.delete(comment)
 	db.session.commit()
 
