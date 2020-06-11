@@ -6,7 +6,8 @@ from .forms import TurmaCreationForm, AssignmentCreationForm, LessonForm
 from .models import AssignmentTaskFile
 
 from app.files import models
-from app.models import Assignment, Upload, Comment, Turma, User, Enrollment, PeerReviewForm, CommentFileUpload, Lesson, AttendanceCode, LessonAttendance
+from app.models import Assignment, Upload, Comment, Turma, User, Enrollment, PeerReviewForm, CommentFileUpload, Lesson, LessonAttendance
+from app.classes.models import AttendanceCode
 from wtforms import SubmitField
 import app.models
 
