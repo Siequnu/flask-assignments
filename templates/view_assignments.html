@@ -1,4 +1,5 @@
 {% extends "header.html" %} {% block app_content %}
+
 <div class="container">
   <br>
   {% if admin %}
@@ -16,17 +17,16 @@
   <br>
   <br>
   <ul class="nav nav-tabs" id="myTab" role="tablist">
-    {% for class in classes %} {% if loop.index
-  <=1 %}
+    {% for class in classes %} {% if loop.index<=1 %}
     <li class="nav-item">
-      <a class="nav-link active" id="{{class.id}}-tab" data-toggle="tab" href="#{{class.id}}" role="tab"
-        aria-controls="{{class.id}}" aria-selected="true">{{class.turma_label}}
+      <a class="nav-link active" id="class-{{class.id}}-tab" data-toggle="tab" href="#class-{{class.id}}" role="tab"
+        aria-controls="class-{{class.id}}" aria-selected="true">{{class.turma_label}}
       </a>
     </li>
     {% else %}
     <li class="nav-item">
-      <a class="nav-link" id="{{class.id}}-tab" data-toggle="tab" href="#{{class.id}}" role="tab"
-        aria-controls="{{class.id}}" aria-selected="false">{{class.turma_label}}
+      <a class="nav-link" id="class-{{class.id}}-tab" data-toggle="tab" href="#class-{{class.id}}" role="tab"
+        aria-controls="class-{{class.id}}" aria-selected="false">{{class.turma_label}}
       </a>
     </li>
     {% endif %}
@@ -34,11 +34,10 @@
   </ul>
   <div class="tab-content" id="myTabContent">
     {% for class in classes %}
-    {% if loop.index 
-  <=1 %}
-    <div class="tab-pane fade show active" id="{{class.id}}" role="tabpanel" aria-labelledby="{{class.id}}-tab">
+    {% if loop.index <=1 %}
+    <div class="tab-pane fade show active" id="class-{{class.id}}" role="tabpanel" aria-labelledby="class-{{class.id}}-tab">
       {% else %}
-      <div class="tab-pane fade" id="{{class.id}}" role="tabpanel" aria-labelledby="{{class.id}}-tab">
+      <div class="tab-pane fade" id="class-{{class.id}}" role="tabpanel" aria-labelledby="class-{{class.id}}-tab">
         {% endif %}
         <br>
         {% for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in assignments_array %}
