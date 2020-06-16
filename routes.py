@@ -361,7 +361,7 @@ def save():
 			db.session.add(peer_review_form)
 			db.session.commit()
 		session['form_data'] = form_data
-		print(form_data)
+		
 	return 'True'
 
 @bp.route('/form/render')
@@ -377,7 +377,7 @@ def render(form_id = False):
 
 	form_loader = app.assignments.formbuilder.formLoader(form_data, (url_for('assignments.submit')))
 	render_form = form_loader.render_form()
-	print (render_form)
+	
 	return render_template('form_builder_render.html', render_form=render_form)
 
 @bp.route('/form/delete/<form_id>')
