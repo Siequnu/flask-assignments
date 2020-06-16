@@ -46,15 +46,15 @@
           <div class="card-body">
             <div class="container">
               <div class="row">
-                <div class="col-2 align-self-center">
-                  <h2 class="display-5">
+                <div class="col-12 col-lg-2 align-self-center">
+                  <h2 class="display-6">
                     <span class="badge badge-secondary">
                       <i class="fa fa-file-upload ">
                       </i> {{uploaded_assignments|length}} / {{students_in_class|length}}
                     </span>
                   </h2>
                 </div>
-                <div class="col-9">
+                <div class="col-12 col-lg-9">
                   <h3 class="text">
                     <strong>
                       <a href="{{url_for('assignments.view_assignment_details', assignment_id = assignment.id)}}">
@@ -84,7 +84,7 @@
                   <em>{{assignment.description}}
                   </em>
                 </div>
-                <div class="col-1">
+                <div class="col-12 col-lg-1">
                   <a href="{{url_for('assignments.view_assignment_details', assignment_id = assignment.id)}}" <button
                     class="btn btn-lg btn-light">
                     <i class="fa fa-3x fa-chevron-right">
@@ -113,7 +113,7 @@
     <div class="card-body">
       <div class="container">
         <div class="row">
-          <div class="col-2 text-center">
+          <div class="col-12 col-lg-2 text-center">
             <h1 class="display-4">
               <span class="badge badge-secondary">{{assignment['due_date'].strftime('%d')}}
               </span>
@@ -121,7 +121,7 @@
             <h2>{{assignment['due_date'].strftime('%b')|upper}}
             </h2>
           </div>
-          <div class="col-10">
+          <div class="col-12 col-lg-10">
             <h3 class="text">
               <strong>{{assignment['title']}}
               </strong>
