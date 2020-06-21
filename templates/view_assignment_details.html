@@ -5,7 +5,7 @@
   <br>
   <div class="container">
     <div class="row">
-      <div class="col-md-2">
+      <div class="col-12 col-lg-2">
         <a href="{{url_for('assignments.view_assignments')}}" 
            <button class="btn btn-light">
         <i class="fa fa-chevron-left">
@@ -13,7 +13,7 @@
         </button>
       </a>
   </div>
-  <div class="col-md-10">
+  <div class="col-12 col-lg-10">
     {% for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in assignment_info %}
     <h1>{{assignment.title}}
     </h1>
@@ -27,7 +27,7 @@
   <div class="card-body">
     <div class="container">
       <div class="row">
-        <div class="col-2 align-self-center">
+        <div class="col-12 col-lg-2 align-self-center">
           <h2 class="display-5">
             <span class="badge badge-secondary">
               <i class="fa fa-file-upload ">
@@ -35,7 +35,7 @@
             </span>
           </h2>
         </div>
-        <div class="col-10">
+        <div class="col-12 col-lg-10">
           <h3 class="text">
             <strong>
               <i class="fa fa-users">
