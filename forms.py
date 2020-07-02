@@ -1,10 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField, DateField, SelectMultipleField, BooleanField, FormField, TextAreaField
+from wtforms import StringField, SubmitField, SelectField, DateField, SelectMultipleField, BooleanField, FormField, TextAreaField, DecimalField
 from wtforms.validators import ValidationError, DataRequired
 from flask_wtf.file import FileField, FileRequired
 from app import db
 
-
+class AssignmentGradeForm(FlaskForm):
+	grade = DecimalField (validators=[DataRequired()])
+	submit = SubmitField('Save grade')
 	
 class AssignmentCreationForm(FlaskForm):
 	title = StringField('Assignment title', validators=[DataRequired()])

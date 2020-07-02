@@ -2,8 +2,8 @@ from flask import render_template, flash, redirect, url_for, request, abort, cur
 from flask_login import current_user, login_required
 
 from . import bp, models, forms
-from .forms import TurmaCreationForm, AssignmentCreationForm, LessonForm
-from .models import AssignmentTaskFile
+from .forms import TurmaCreationForm, AssignmentCreationForm, LessonForm, AssignmentGradeForm
+from .models import AssignmentTaskFile, AssignmentGrade
 
 from app.files import models
 from app.models import Assignment, Upload, Comment, Turma, User, Enrollment, PeerReviewForm, CommentFileUpload, Lesson, LessonAttendance
@@ -42,21 +42,18 @@ def view_assignments():
 	abort (403)
 
 
-# View created assignments status
+# View details of a single assignment 
 @bp.route("/view/<assignment_id>")
 @login_required
 def view_assignment_details(assignment_id):
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
-		assignment_turma = Assignment.query.get(assignment_id).target_turma_id
-		students_in_class = Enrollment.query.filter(Enrollment.turma_id == assignment_turma).all()
-		completed_assignments = Upload.query.filter(Upload.assignment_id == assignment_id).all()
 		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
 		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
 		return render_template('view_assignment_details.html',
-							   assignment_student_info = assignment_student_info,
-							   assignment_id = assignment_id,
-							   assignment_info = assignment_info
-							   )
+			assignment_student_info = assignment_student_info,
+			assignment_id = assignment_id,
+			assignment_info = assignment_info
+			)
 	abort (403)
 
 
@@ -263,7 +260,6 @@ def create_teacher_review(upload_id):
 					flash('Your file ' + str(original_filename) + ' was uploaded successfully.', 'success')
 			
 			# For this assignment (class), get a list of uploads that haven't been commented on by current_user.id
-			not_yet_graded_uploads = []
 			uploads = Upload.query.join(User, Upload.user_id == User.id).filter(
 				Upload.assignment_id == assignment_id).order_by(
 				User.student_number.asc()).all()
@@ -272,6 +268,7 @@ def create_teacher_review(upload_id):
 					# There is an assignment that hasn't been graded, redirect to the grading page
 					return redirect(url_for('assignments.create_teacher_review', upload_id = upload.id))
 			# No more assignments to be graded, return to assignment detail page
+			flash ('All the assignments have been graded for this class', 'success')
 			return redirect(url_for('assignments.view_assignment_details', assignment_id = assignment_id))
 		return render_template('files/peer_review_form.html',
 								title='Submit a teacher review',
@@ -280,6 +277,65 @@ def create_teacher_review(upload_id):
 								class_info = class_info,
 								form=form_html,
 								admin_file_upload = True)
+	abort (403)
+
+
+
+# Display an empty review feedback form
+@bp.route("/grade/<upload_id>", methods=['GET', 'POST'])
+@login_required
+def grade_assignment(upload_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		
+		# Get assignment and user details
+		upload = Upload.query.get(upload_id)
+		if upload is None: abort (404)
+		assignment_id = upload.assignment_id
+		if assignment_id is None: abort (404)
+		assignment_info = Assignment.query.get(assignment_id)
+		user_info = User.query.get(Upload.query.get(upload_id).user_id)
+		class_info = Turma.query.get(assignment_info.target_turma_id)
+
+		grade = AssignmentGrade.query.filter_by(upload_id = upload_id).first()
+		if grade is not None:
+			form = AssignmentGradeForm (obj = grade)
+		else:
+			form = AssignmentGradeForm ()
+		
+		if form.validate_on_submit():
+			# Submit the grade
+			grade_object = AssignmentGrade(
+				upload_id = upload_id,
+				grade = form.grade.data,
+				user_id = current_user.id)
+			db.session.add(grade_object)
+			db.session.commit()
+			
+			# Display a success message
+			flash('Work marked as ' + str(grade) + '.', 'success')
+			
+			# For this assignment (class), get a list of uploads that haven't been graded by current_user.id
+			uploads = Upload.query.join(User, Upload.user_id == User.id).filter(
+				Upload.assignment_id == assignment_id).order_by(
+				User.student_number.asc()).all()
+			
+			# Check if each upload has been graded
+			for upload in uploads:
+				if AssignmentGrade.query.filter(AssignmentGrade.upload_id == upload.id).filter(
+					AssignmentGrade.user_id == current_user.id).first() is None:
+					# There is an assignment that hasn't been graded, redirect to the grading page
+					return redirect(url_for('assignments.grade_assignment', upload_id = upload.id))
+			# No more assignments to be graded, return to assignment detail page
+			flash ('All the assignments have been graded for this class', 'success')
+			return redirect(url_for('assignments.view_assignment_details', assignment_id = assignment_id))
+		
+		return render_template('assignment_grade_form.html',
+			title='Grading',
+			upload = upload,
+			assignment_info = assignment_info,
+			user_info = user_info,
+			class_info = class_info,
+			form = form)
 	abort (403)
 
 

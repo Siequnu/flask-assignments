@@ -10,6 +10,16 @@ from datetime import datetime, date
 from dateutil import tz
 import arrow, json, time
 
+class AssignmentGrade (db.Model):
+	__table_args__ = {'sqlite_autoincrement': True}
+	id = db.Column(db.Integer, primary_key=True)
+	upload_id = db.Column(db.Integer, db.ForeignKey('upload.id'))
+	grade = db.Column(db.Float)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	
+	def __repr__(self):
+		return '<Grade {}>'.format(self.id)	
+
 class AssignmentTaskFile(db.Model):
 	__table_args__ = {'sqlite_autoincrement': True}
 	id = db.Column(db.Integer, primary_key=True)
@@ -68,6 +78,8 @@ def get_assignment_student_info (assignment_id):
 			Upload.assignment_id == assignment_id).first()
 		except:
 			pass
+		if student_dict['upload'] is not None:
+			student_dict['grade'] = AssignmentGrade.query.filter_by(upload_id = student_dict['upload'].id).first()
 		try:
 			student_dict['comments'] = db.session.query(Comment).filter(
 			Comment.file_id == student_dict['upload'].id).filter(Comment.pending == 0).all()
