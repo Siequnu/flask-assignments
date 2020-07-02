@@ -18,6 +18,8 @@ from pathlib import Path
 
 import app.assignments.formbuilder
 
+from flask_weasyprint import HTML, render_pdf
+
 # View created assignments status
 @bp.route("/view/", methods=['GET', 'POST'])
 @login_required
@@ -271,12 +273,12 @@ def create_teacher_review(upload_id):
 			flash ('All the assignments have been graded for this class', 'success')
 			return redirect(url_for('assignments.view_assignment_details', assignment_id = assignment_id))
 		return render_template('files/peer_review_form.html',
-								title='Submit a teacher review',
-								assignment_info = Assignment.query.get(assignment_id),
-								user_info = User.query.get(Upload.query.get(upload_id).user_id),
-								class_info = class_info,
-								form=form_html,
-								admin_file_upload = True)
+			title='Submit a teacher review',
+			assignment_info = assignment_info,
+			user_info = user_info,
+			class_info = class_info,
+			form=form_html,
+			admin_file_upload = True)
 	abort (403)
 
 
@@ -336,6 +338,36 @@ def grade_assignment(upload_id):
 			user_info = user_info,
 			class_info = class_info,
 			form = form)
+	abort (403)
+
+
+# Route to return a rendered template with the grades PDF
+@bp.route('/view/pdf')
+def grades_pdf(assignment_student_info, assignment_info, assignment_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		return render_template('pdf_grades.html',
+			assignment_student_info = assignment_student_info,
+			assignment_info = assignment_info,
+			assignment_id = assignment_id,
+			app_name = current_app.config['APP_NAME'])
+	abort (403)
+	
+# Accessible route to return a PDF with grades
+@bp.route('/view/pdf/<assignment_id>')
+@login_required
+def view_grades_pdf(assignment_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		assignment = Assignment.query.get(assignment_id)
+		if assignment is None: abort (404)
+		
+		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
+		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
+		
+		html = grades_pdf(
+			assignment_student_info = assignment_student_info, 
+			assignment_info = assignment_info, 
+			assignment_id = assignment_id)
+		return render_pdf (HTML(string=html))
 	abort (403)
 
 

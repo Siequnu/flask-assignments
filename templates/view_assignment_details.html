@@ -84,6 +84,12 @@
           </i> Close assignment
           </button>
         </a>
+        <a href="{{url_for('assignments.view_grades_pdf', assignment_id = assignment.id)}}" <button
+          class="btn btn btn-outline-info">
+          <i class="fa fa-star-half-alt">
+          </i> Export grades to PDF
+          </button>
+        </a>
         <a href="{{url_for('assignments.delete_assignment', assignment_id = assignment.id)}}" <button
           class="btn btn btn-outline-danger float-right">
           <i class="fa fa-trash-alt">
@@ -175,7 +181,16 @@
                     {% endif %}
                   </td>
                   <td>
+                    {% if user.grade.grade is defined %}
                     {{user.grade.grade}}
+                    {% else %}
+                    <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}" <button
+                      class="btn btn-sm btn-outline-info">
+                      <i class="fa fa-star-half-alt">
+                      </i> Grade
+                      </button>
+                    </a>
+                    {% endif %}
                   </td>
                   <td>
                     {% if user.upload.original_filename %}
@@ -183,12 +198,6 @@
                       class="btn btn-sm btn-outline-primary">
                       <i class="fa fa-download">
                       </i> Download
-                      </button>
-                    </a>
-                    <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}" <button
-                      class="btn btn-sm btn-outline-info">
-                      <i class="fa fa-star-half-alt">
-                      </i> Grade
                       </button>
                     </a>
                     <a href="{{url_for('assignments.create_teacher_review', upload_id = user.upload.id)}}" <button
