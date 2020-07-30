@@ -1,0 +1,27 @@
+{% extends "header.html" %} {% block app_content %}
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1><i class="fa fa-star-half-alt"></i> Class grades summary</h1>
+            <hr>
+        </div>
+    </div>
+    <a href="{{url_for('assignments.view_class_grades', turma_id = turma.id, pdf = True)}}" <button class="btn btn btn-info">
+        <i class="fa fa-star-half-alt">
+        </i> Export as PDF
+        </button>
+    </a>
+    <hr>
+    <!-- Logo, title and class information-->
+    <div class="row justify-content-center align-items-center">
+        <div class="col">
+            <h3>{{turma.turma_label}} - {{turma.turma_number}}</h3>
+            <p>{{turma.turma_term}}, {{turma.turma_year}}</p>
+        </div>
+    </div>
+
+    {% include 'class_grades_table.html' %}
+</div>
+{% endblock %}

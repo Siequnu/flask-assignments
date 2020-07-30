@@ -1,0 +1,34 @@
+{{ bootstrap.load_css() }}
+
+<!-- Custom fonts for this template -->
+<link href="/static/bootstrap/css/flatly.min.css" rel="stylesheet">
+
+<!-- The custom font numbers are not working properly, so use system fonts instead-->
+<style>
+        h1,
+        h2,
+        h3,
+        body,
+        p {
+                font-family: "Open Sans", Calibri, Candara, Arial, sans-serif;
+        }
+</style>
+
+<!-- Logo, title and class information-->
+<div class="row justify-content-center align-items-center">
+        <div class="col-2">
+                <img src="/static/app_logo_{{config.APP_NAME}}.png" width="10px" height="10px" class="" alt="">
+        </div>
+        <div class="col-2">
+                <h3>{{app_name}}</h3>
+        </div>
+        <div class="col">
+                <h3>{{turma.turma_label}} - {{turma.turma_number}}</h3>
+                <p>{{turma.turma_term}}, {{turma.turma_year}}</p>
+        </div>
+</div>
+
+<!-- Include the table with grade information -->
+<div class="container">
+        {% include 'class_grades_table.html' %}
+</div>

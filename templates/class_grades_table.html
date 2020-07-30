@@ -1,0 +1,85 @@
+<!-- The basic table that is used for both class grades HTML and PDF -->
+<!-- Student grades-->
+<div class="table-responsive">
+        <table class="table table-responsive table-striped table-bordered table-hover table-sm">
+                <thead>
+                        <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                {% for assignment in assignments %}
+                                <th>{{assignment.title}}</th>
+                                {% endfor %}
+                        </tr>
+                </thead>
+                <tbody id="searchableTable">
+                        {% for user in class_grade_info %}
+                        <tr>
+                                <td>{{user.student_number}}</td>
+                                <td>{{user.username}}</td>
+                                {% for assignment in user.user_assignments %}
+                                <td>
+                                        {{assignment.grade}}
+                                </td>
+                                {% endfor %}
+                        </tr>
+                        {% endfor %}
+                </tbody>
+                <tfoot>
+                        <tr>
+                        </tr>
+                </tfoot>
+        </table>
+</div>
+<!--end of .table-responsive-->
+
+<!-- Detailed list of all the assignments -->
+{% for assignment_info in assignment_info_array %}
+{% for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in assignment_info.assignment_info %}
+<div class="card border-primary mb-3">
+        <div class="card-body">
+                <div class="container">
+                        <div class="row">
+                                <div class="col-2 col-lg-2 align-self-center">
+                                        <h3>
+                                                <span class="badge badge-secondary">
+                                                        <i class="fa fa-file-upload ">
+                                                        </i> {{uploaded_assignments|length}} /
+                                                        {{students_in_class|length}}
+                                                </span>
+                                        </h3>
+                                </div>
+                                <div class="col-10 col-lg-10">
+                                        <h4 class="text">
+                                                <strong>
+                                                        <i class="fa fa-users">
+                                                        </i> {{assignment.title}}
+                                                </strong>
+                                        </h4>
+                                        <ul class="list-inline">
+                                                <li class="list-inline-item">
+                                                        <i class="fa fa-calendar-check" aria-hidden="true">
+                                                        </i> due on {{assignment.due_date}}
+                                                </li>
+                                                {% if peer_review_form_title %}
+                                                <li class="list-inline-item">
+                                                        <i class="fa fa-file" aria-hidden="true">
+                                                        </i> {{peer_review_form_title}}
+                                                </li>
+                                                {% endif %}
+                                                {% if assignment_task_filename %}
+                                                <li class="list-inline-item">
+                                                        <i class="fa fa-info-circle" aria-hidden="true">
+                                                        </i> {{ assignment_task_filename}}
+                                                </li>
+                                                {% endif %}
+                                        </ul>
+                                        <em>{{assignment.description}}
+                                        </em>
+                                </div>
+                        </div>
+                </div>
+        </div>
+
+</div>
+{% endfor %}
+{% endfor %}

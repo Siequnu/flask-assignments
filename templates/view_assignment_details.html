@@ -26,7 +26,7 @@
       <div class="card-body">
         <div class="container">
           <div class="row">
-            <div class="col-12 col-lg-2 align-self-center">
+            <div class="col-12 col-xl-2 align-self-center">
               <h2 class="display-5">
                 <span class="badge badge-secondary">
                   <i class="fa fa-file-upload ">
@@ -34,7 +34,7 @@
                 </span>
               </h2>
             </div>
-            <div class="col-12 col-lg-10">
+            <div class="col-12 col-xl-10">
               <h3 class="text">
                 <strong>
                   <i class="fa fa-users">
@@ -181,8 +181,10 @@
                     {% endif %}
                   </td>
                   <td>
+                    {% if user.grade is defined %}
                     {% if user.grade.grade is defined %}
                     {{user.grade.grade}}
+                    {% endif %}
                     {% else %}
                     <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}" <button
                       class="btn btn-sm btn-outline-info">

@@ -28,10 +28,12 @@ def view_assignments():
 		# Get admin view with all assignments
 		clean_assignments_array = app.assignments.models.get_assignment_info()
 		classes = app.assignments.models.get_all_class_info()
+		turma_choices = [(turma.id, turma.turma_label) for turma in Turma.query.all()]
 		return render_template('view_assignments.html',
-							   assignments_array = clean_assignments_array,
-							   admin = True,
-							   classes=classes)
+			assignments_array = clean_assignments_array,
+			admin = True,
+			classes=classes,
+			turma_choices = turma_choices)
 	elif current_user.is_authenticated:
 		# Get user class
 		if Enrollment.query.filter(Enrollment.user_id==current_user.id).first() is not None:
@@ -339,18 +341,6 @@ def grade_assignment(upload_id):
 			class_info = class_info,
 			form = form)
 	abort (403)
-
-
-# Route to return a rendered template with the grades PDF
-@bp.route('/view/pdf')
-def grades_pdf(assignment_student_info, assignment_info, assignment_id):
-	if current_user.is_authenticated and app.models.is_admin(current_user.username):
-		return render_template('pdf_grades.html',
-			assignment_student_info = assignment_student_info,
-			assignment_info = assignment_info,
-			assignment_id = assignment_id,
-			app_name = current_app.config['APP_NAME'])
-	abort (403)
 	
 # Accessible route to return a PDF with grades
 @bp.route('/view/pdf/<assignment_id>')
@@ -363,11 +353,86 @@ def view_grades_pdf(assignment_id):
 		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
 		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
 		
-		html = grades_pdf(
-			assignment_student_info = assignment_student_info, 
-			assignment_info = assignment_info, 
-			assignment_id = assignment_id)
+		html = render_template('pdf_grades.html',
+			assignment_student_info = assignment_student_info,
+			assignment_info = assignment_info,
+			assignment_id = assignment_id,
+			app_name = current_app.config['APP_NAME'])
+
 		return render_pdf (HTML(string=html))
+	abort (403)
+
+
+# Accessible route to return a PDF with all the grades of a class
+@bp.route('/view/class/<turma_id>')
+@bp.route('/view/class/<turma_id>/<pdf>')
+@login_required
+def view_class_grades(turma_id, pdf = False):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		turma = Turma.query.get(turma_id)
+		if turma is None: abort (404)
+		
+		# Compile the grades information
+		assignments = Assignment.query.filter_by (target_turma_id = turma_id)
+		class_grade_info = []
+		for enrollment, turma, user in app.classes.models.get_class_enrollment_from_class_id (turma_id):
+			user_dict = {}
+			user_dict['student_number'] = user.student_number
+			user_dict['username'] = user.username
+
+			# Make an assignments array and add grade information to each assignment
+			user_assignments = []
+			for assignment in assignments:
+				assignment_dict = {}
+				assignment_dict['id'] = assignment.id
+				# For each assignment, get each upload
+				upload = Upload.query.filter_by(
+					user_id = user.id,
+					assignment_id = assignment.id
+				).first()
+
+				# If upload was received, add the grade to the array
+				if upload is not None:
+					grade = AssignmentGrade.query.filter_by(
+						upload_id = upload.id
+					).first()
+					if grade is not None: 
+						assignment_dict['grade'] = grade.grade
+					else: assignment_dict['grade'] = 'No Grd'
+				else:
+					assignment_dict['grade'] = 'No Upl'
+					
+				user_assignments.append (assignment_dict)
+
+			user_dict['user_assignments'] = user_assignments
+			class_grade_info.append(user_dict)
+
+		# General assignment info 
+		# #!# Can this be removed or refactored?
+		assignment_info_array = []
+		for assignment in assignments:
+			assignment_dict = assignment.__dict__
+			assignment_dict['assignment_student_info'] = app.assignments.models.get_assignment_student_info(assignment.id)
+			assignment_dict['assignment_info'] = app.assignments.models.get_assignment_info(assignment.id)
+			assignment_info_array.append(assignment_dict)
+		
+		if pdf:
+			html = render_template(
+				'class_grades_pdf.html',
+				class_grade_info = class_grade_info,
+				assignments = assignments,
+				assignment_info_array = assignment_info_array,
+				turma = turma,
+				app_name = current_app.config['APP_NAME'])
+			return render_pdf (HTML(string=html))
+		else:
+			return render_template(
+				'class_grades.html',
+				class_grade_info = class_grade_info,
+				assignments = assignments,
+				assignment_info_array = assignment_info_array,
+				turma = turma,
+				app_name = current_app.config['APP_NAME'])
 	abort (403)
 
 
