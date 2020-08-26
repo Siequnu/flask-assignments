@@ -32,11 +32,39 @@
   <br>
   {% if admin %}
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-12">
+      <button type="button" class="btn btn-lg btn-outline-secondary float-right" data-toggle="modal"
+        data-target="#adminHelpModal">
+        <i class="fa fa-info"></i>
+      </button>
       <h1><i class="fa fa-tasks"></i> View assignments</h1>
       <hr>
     </div>
   </div>
+  
+  
+  <!-- Help modal -->
+  <div class="modal fade" id="adminHelpModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h1 class="display-5"><i class="fa fa-tasks"></i> Assignments</h1>
+          <p class="lead">In the Assignments section, you can set single or multiple classes group tasks with a deadline, and include an optional assignment file. </p>
+          <hr class="my-4">
+          <p>While the deadline is open, students can replace their uploaded work, and can be encouraged to use this site as a temporary storage or backup area, while they finish their deadline.</p>
+          <p>An assignments must have a review form associated with it, which can be created in the Peer Review Form section.</p>
+          <p>If an assignments is set as a Peer Review assignments, students within the same class will be redistributed with two of their colleague's assignments, after the submission deadline is over.</p>
+          <p>Each task will close before the deadline, and any further assignments will not be accepted.</p>
+          <p>Class grades can be analysed and exported by clicking on "View class grades".</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
   <a href="{{url_for('assignments.create_assignment')}}" <button class="btn btn-lg btn-success">
     <i class="fa fa-plus-circle">
     </i> Create assignment
@@ -136,12 +164,40 @@
       {% endfor %}
     </div>
   </div>
+
+  <!-- Student view-->
   {% elif assignmentsArray %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-12">
+      <button type="button" class="btn btn-lg btn-outline-secondary float-right" data-toggle="modal"
+        data-target="#studentHelpModal">
+        <i class="fa fa-info"></i>
+      </button>
       <h1><i class="fa fa-tasks"></i> Assignments</h1>
     </div>
   </div>
+
+  <!-- Help modal -->
+  <div class="modal fade" id="studentHelpModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h1 class="display-5"><i class="fa fa-tasks"></i> Assignments</h1>
+          <p class="lead">In the Assignments section, you can view your assignments, current and past.</p>
+          <hr class="my-4">
+          <p>While the deadline is open, you can replace your uploaded work, so you can use this site as a temporary storage or backup area, while you finish their work.</p>
+          <p>If this assignments is a Peer Review, you will be given two of your colleague's work to review, but you must first upload your own work.</p>
+          <p>Each task will close before the deadline, and any further assignments will not be accepted.</p>
+          <p>Make sure to check the My Uploads area regularly, as you will receive your teacher, TA, and colleague reviews here.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <hr> {% for assignment in assignmentsArray %}
   <div class="card bg-light mb-3">
     <div class="card-body">
