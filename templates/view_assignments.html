@@ -217,19 +217,21 @@
               </strong>
             </h3>
             <ul class="list-inline">
-              <li class="list-inline-item">
+              <li class="m-1 list-inline-item">
                 <i class="fa fa-calendar" aria-hidden="true">
                 </i> due on {{assignment['due_date'].strftime('%A')}}, {{assignment['humanized_due_date']}}
               </li>
               {% if assignment['assignment_task_filename'] %}
               <a href="{{url_for('assignments.download_assignment_file', assignment_id = assignment['id'])}}">
-                <li class="list-inline-item">
-                  <i class="fa fa-info-circle" aria-hidden="true">
-                  </i> {{ assignment['assignment_task_filename']}}
+                <li class="m-1 list-inline-item">
+                  <button class="btn btn-primary btn-sm">
+                    <i class="fa fa-file-download">
+                    </i> Download assignment handout
+                  </button>
                 </li>
               </a>
               {% endif %}
-            </ul>
+              </ul>
             <em>{{assignment['description']}}
             </em>
           </div>
@@ -238,7 +240,7 @@
     </div>
     <div class="card-footer">
       {% if assignment['submitted_filename'] %}
-      <a href="{{url_for('files.download', file_id = assignment['upload'].id)}}" <button class="btn btn-info btn-sm">
+      <a href="{{url_for('files.download', file_id = assignment['upload'].id)}}" <button class="btn ml-1 btn-info btn-sm">
         <i class="fa fa-file-download">
         </i> {{assignment['submitted_filename']}}
         </button>
@@ -246,7 +248,7 @@
       {% if assignment['assignment_is_past_deadline'] %}
       {% else %}
       <a href="{{url_for('files.replace_uploaded_file', upload_id = assignment['upload']['id'])}}" <button
-        class="btn btn-secondary btn-sm">
+        class="btn ml-1 btn-secondary btn-sm">
         <i class="fa fa-exchange-alt">
         </i> Change uploaded file
         </button>
@@ -254,27 +256,27 @@
       {% endif %}
       {% if assignment['peer_review_necessary'] == True %}
       {% if assignment['complete_peer_review_count'] == 0 %}
-      <a href="#" class="btn btn-default btn-sm disabled float-right" role="button" disabled="true">Submit Review 2
+      <a href="#" class="btn btn-default btn-sm ml-1 disabled float-right" role="button" disabled="true">Submit Review 2
       </a>
       <a href="{{url_for('files.download_file', assignment_id = assignment['id'])}}"
-        class="btn btn-primary btn-sm float-right" role="button" aria-disabled="true">Submit Review 1
+        class="btn btn-primary btn-sm ml-1 float-right" role="button" aria-disabled="true">Submit Review 1
       </a>
       {% elif assignment['complete_peer_review_count'] == 1 %}
       <a href="{{url_for('files.download_file', assignment_id = assignment['id'])}}"
-        class="btn btn-primary btn-sm float-right" role="button" aria-disabled="true">Submit Review 2
+        class="btn btn-primary btn-sm ml-1 float-right" role="button" aria-disabled="true">Submit Review 2
       </a>
       <a href="{{url_for('assignments.view_peer_review', comment_id=assignment['completed_peer_review_objects'][0].id)}}"
-        class="btn btn-success btn-sm float-right" role="button" aria-disabled="true">View Review 1
+        class="btn btn-success btn-sm ml-1 float-right" role="button" aria-disabled="true">View Review 1
       </a>
       {% elif assignment['complete_peer_review_count'] == 2 %}
       <a href="{{url_for('assignments.view_peer_review', comment_id=assignment['completed_peer_review_objects'][1].id)}}"
-        class="btn btn-success btn-sm float-right" role="button" aria-disabled="true">View Review 2
+        class="btn btn-success ml-1 btn-sm float-right" role="button" aria-disabled="true">View Review 2
       </a>
       <a href="{{url_for('assignments.view_peer_review', comment_id=assignment['completed_peer_review_objects'][0].id)}}"
-        class="btn btn-success btn-sm float-right" role="button" aria-disabled="true">View Review 1
+        class="btn btn-success btn-sm ml-1 float-right" role="button" aria-disabled="true">View Review 1
       </a>
       {% endif %} {% else %}
-      <a href="" class="btn btn-info btn-lg btn-sm disabled float-right" role="button" aria-disabled="true">This
+      <a href="" class="btn ml-1 btn-info btn-lg btn-sm disabled float-right" role="button" aria-disabled="true">This
         assignment will not be peer-reviewed
       </a>
       {% endif %} {% else %} {% if assignment['assignment_is_past_deadline'] %}
