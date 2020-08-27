@@ -36,7 +36,11 @@
 
                 {% endif %}
                 <div class="col-xs-12 col-md-6 col-sm-offset-3">
-                    {{ render_form|safe }}
+                    <form method="post">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                        {{ render_form|safe }}
+                    </form>
+
                 </div>
                 </row>
             </div>

@@ -493,6 +493,37 @@ def download_comment_file_upload(comment_file_upload_id):
 
 
 ############# Peer review forms builder routes
+from flask_talisman import Talisman, ALLOW_FROM
+from app import talisman
+# Build temporary expanded content security policy
+temp_csp = {
+        'default-src': [
+            '\'self\'',
+            '\'unsafe-inline\'',
+            'cdnjs.cloudflare.com',
+            'fonts.googleapis.com',
+            'fonts.gstatic.com',
+            '*.w3.org',
+            'kit-free.fontawesome.com'
+        ],
+        'img-src': '*',
+        'style-src': [
+            '*',
+            '\'self\'',
+            '\'unsafe-inline\'',
+            '\'unsafe-eval\'',
+        ],
+        'script-src': [
+            '\'self\'',
+            '\'unsafe-inline\'',
+			'\'unsafe-eval\'',
+            'ajax.googleapis.com',
+            'code.jquery.com',
+            'cdn.jsdelivr.net',
+            'cdnjs.cloudflare.com',
+        ]
+    }
+@talisman(content_security_policy=temp_csp)
 @bp.route("/form/builder")
 def form_builder():
 	return render_template('form_builder_index.html')
