@@ -616,8 +616,11 @@ def render(form_id = False):
 
 @bp.route('/form/delete/<form_id>')
 def delete_peer_review_form(form_id):
-	#!# Check if form is in use by any assignments?
-	
+	# Check if the form is in use by any assignments, and refuse to delete
+	peer_review_forms_in_use = Assignment.query.filter_by (peer_review_form_id = form_id).all()
+	if (len(peer_review_forms_in_use) > 0):
+		flash ('This form is currently being used by an assignment, and can not be deleted.', 'info')	
+		return (redirect(url_for('assignments.peer_review_form_admin')))
 	PeerReviewForm.query.filter(PeerReviewForm.id == form_id).delete()
 	db.session.commit()
 	flash ('Form deleted successfully.', 'success')
