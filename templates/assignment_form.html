@@ -3,6 +3,10 @@
 {% block app_content %}
 <div class="container">
   <br>
+  <button type="button" class="btn btn-lg btn-outline-secondary float-right" data-toggle="modal"
+    data-target="#adminHelpModal">
+    <i class="fa fa-info"></i>
+  </button>
   <div class="card bg-light mb-3" style="max-width: 40rem;">
     <div class="card-body">
       <h1>{{title}}</h1>
@@ -20,4 +24,75 @@
   </div>
 </div>
 
+<!-- Help modal -->
+<div class="modal fade" id="adminHelpModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h1 class="display-5"><i class="fa fa-tasks"></i> Create assignment</h1>
+        <p class="lead">Here you can create an assignment for one or more classes.</p>
+        <hr class="my-4">
+        <p>You can set an assignment title and description, which will display for the students on their Home and
+          Assignment pages.</p>
+        <p>A due date must be set. After you have create the assignment, you will have the option to close it
+          immediately, which can be useful for, for example, a class exam.</p>
+        <p>In the 'For Classes' section, you can choose one of more classes which will be given this assignment. To
+          select multiple classes, hold the control key (Windows) or the command key (Mac).</p>
+        <p>If you wish to make this a peer review task, select the box. After the assignment deadline has passed, any
+          students who have submitted their work to this assignment can download, review, and upload a review to a
+          colleague's work. The peer reviews will be from the same class, and never from a different class, even if you
+          selected multiple classes when creating the assignment. Each student will receive two of their colleague's
+          work for peer review, but they will only receive the second download after they have submitted their first
+          peer review. Students who have not submitted any work can not download any of their colleague's work.</p>
+        <p>If a student has not submitted their work before the deadline, a teacher can submit their work for them,
+          allowing them to, for example, participate in the peer review process.</p>
+        <p>Each assignment must have a feedback form associated with it, which will be used by teachers and, if
+          peer-review is selected, other students in the same class to submit their feedback. New feedback forms can be
+          created in the peer-review form section.</p>
+        <p>In addition to, and independently of the feedback form, each assignemnt upload can receive an optional
+          graded.</p>
+        <p>Finally, you can uplaod a file to accompany this assignment. This an optional step, but can be a more
+          efficient way of distributing a complex task than attempting to write the instructions in the assignment
+          description, or uploading this file to the library.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
+
+{% block templateScripts %}
+<!-- jQuery libraries -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<script>
+  // Enable the datefield to use UI datepicker
+  $('#due_date').datepicker({ dateFormat: 'yy-mm-dd' });
+
+  // On clicking submit, check if the date is < today, and confirm with the user they actually mean this
+  $('#submit').on ('click', function (event) {
+    var dueDate = $('#due_date').val ();
+
+    // Create date from input value
+    var inputDate = new Date (dueDate);
+
+    // Get today's date
+    var todaysDate = new Date ();
+
+    // call setHours to take the time out of the comparison
+    if (inputDate.setHours(0, 0, 0, 0) < todaysDate.setHours(0, 0, 0, 0)) {
+      if (confirm('The assignment due date is set in the past. Are you sure you want to continue?')) {
+        // Let the user create the assignment
+      } else {
+        event.preventDefault ();
+      }
+    }
+  });
+</script>
+
+{% endblock templateScripts %}
