@@ -20,6 +20,10 @@ class AssignmentGrade (db.Model):
 	def __repr__(self):
 		return '<Grade {}>'.format(self.id)	
 
+	def delete (self):
+		db.session.delete(self)
+		db.session.commit()
+
 class AssignmentTaskFile(db.Model):
 	__table_args__ = {'sqlite_autoincrement': True}
 	id = db.Column(db.Integer, primary_key=True)
@@ -226,17 +230,24 @@ def new_assignment_from_form (form):
 		db.session.commit()
 
 def delete_assignment_from_id (assignment_id):	
-	# Delete all upload records for this assignment
-	assignment_uploads = Upload.query.filter_by(assignment_id=assignment_id).all()
-	if assignment_uploads is not None:
-		for upload in assignment_uploads:
-			db.session.delete(upload)
-	# Delete all comments for those uploads
-	comments = Comment.query.filter_by(assignment_id=assignment_id).all()
-	if comments is not None:
-		for comment in comments:
-			db.session.delete(comment)
 	
+	# Delete all comments and comment uploads for those uploads
+	comments = Comment.query.filter_by(assignment_id=assignment_id).all()
+	for comment in comments:
+		# Delete any comment uploads
+		for comment_file_upload in CommentFileUpload.query.filter_by (comment_id = comment.id).all():
+			db.session.delete (comment_file_upload)
+		
+		db.session.delete(comment)
+	
+	# Delete all upload and grades records for this assignment
+	for upload in Upload.query.filter_by (assignment_id=assignment_id).all():
+		# Find and delete any grades for these uploads
+		for grade in AssignmentGrade.query.filter_by (upload_id = upload.id).all():
+			db.session.delete (grade)
+		
+		db.session.delete(upload)
+
 	# Get a list of any task files
 	assignment_task_file_id = Assignment.query.get(assignment_id).assignment_task_file_id
 	
@@ -280,6 +291,17 @@ def delete_all_comments_from_user_id (user_id):
 	if comments is not None:
 		for comment in comments:
 			db.session.delete(comment)
+	db.session.commit()
+
+
+def delete_all_grades_from_user_id (user_id):
+	# Find the uploads that this user has made
+	uploads = Upload.query.filter_by (user_id = user_id).all()
+	for upload in uploads:
+		# For each upload, delete any associated grades
+		grades = AssignmentGrade.query.filter_by(upload_id=upload.id).all()
+		for grade in grades:
+			db.session.delete (grade)
 	db.session.commit()
 
 
