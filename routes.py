@@ -9,7 +9,6 @@ from .models import AssignmentTaskFile, AssignmentGrade
 from app.files import models
 from app.models import Assignment, Upload, Comment, Turma, User, Enrollment, PeerReviewForm, CommentFileUpload, Lesson, LessonAttendance
 from app.classes.models import AttendanceCode
-from app.classes import models
 from wtforms import SubmitField
 import app.models
 
