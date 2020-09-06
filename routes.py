@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, abort, current_app, session, Response
 from flask_login import current_user, login_required
+from app import csrf
 
 from . import bp, models, forms
 from .forms import TurmaCreationForm, AssignmentCreationForm, LessonForm, AssignmentGradeForm
@@ -16,7 +17,7 @@ from sqlalchemy import or_
 import json, zipfile, zipstream, os, datetime, uuid
 from pathlib import Path
 
-import app.assignments.formbuilder
+from app.assignments.formbuilder import formLoader
 
 from flask_weasyprint import HTML, render_pdf
 
@@ -529,6 +530,7 @@ def form_builder():
 	return render_template('form_builder_index.html')
 
 @bp.route('/form/save', methods=['POST'])
+@csrf.exempt
 def save():
 	if request.method == 'POST':
 		form_data = request.form.get('formData')
@@ -548,6 +550,53 @@ def save():
 		
 	return 'True'
 
+from flask_talisman import Talisman, ALLOW_FROM
+from app import talisman
+# Build temporary expanded content security policy
+temp_csp = {
+        'default-src': [
+			'*',
+			'\'self\'',
+            '\'unsafe-inline\'',
+            'cdnjs.cloudflare.com',
+            'fonts.googleapis.com',
+            'fonts.gstatic.com',
+            '*.w3.org',
+            'kit-free.fontawesome.com'
+        ],
+        'img-src': '*',
+		'connect-src': '*',
+		'font-src': [
+			'*',
+			'\'self\'',
+            'data:',
+			'\'unsafe-inline\'',
+			'\'unsafe-eval\'',
+            'ajax.googleapis.com',
+            '*.fontawesome.com'
+			'code.jquery.com',
+            'cdn.jsdelivr.net',
+            'cdnjs.cloudflare.com',
+        ],
+		'child-src': '*',
+        'style-src': [
+            '*',
+            '\'self\'',
+            '\'unsafe-inline\'',
+            '\'unsafe-eval\'',
+        ],
+        'script-src': [
+            '*',
+			'\'self\'',
+            '\'unsafe-inline\'',
+			'\'unsafe-eval\'',
+            'ajax.googleapis.com',
+            'code.jquery.com',
+            'cdn.jsdelivr.net',
+            'cdnjs.cloudflare.com',
+        ]
+    }
+@talisman(content_security_policy=temp_csp)
 @bp.route('/form/render')
 @bp.route('/form/render/<form_id>')
 def render(form_id = False):
