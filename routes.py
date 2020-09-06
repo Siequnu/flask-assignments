@@ -9,6 +9,7 @@ from .models import AssignmentTaskFile, AssignmentGrade
 from app.files import models
 from app.models import Assignment, Upload, Comment, Turma, User, Enrollment, PeerReviewForm, CommentFileUpload, Lesson, LessonAttendance
 from app.classes.models import AttendanceCode
+from app.classes import models
 from wtforms import SubmitField
 import app.models
 
@@ -28,8 +29,8 @@ def view_assignments():
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
 		# Get admin view with all assignments
 		clean_assignments_array = app.assignments.models.get_assignment_info()
-		classes = app.assignments.models.get_all_class_info()
-		turma_choices = [(turma.id, turma.turma_label) for turma in Turma.query.all()]
+		classes = app.classes.models.get_teacher_classes_from_teacher_id (current_user.id)
+		turma_choices = [(turma.id, turma.turma_label) for turma in classes]
 		return render_template('view_assignments.html',
 			assignments_array = clean_assignments_array,
 			admin = True,
@@ -115,7 +116,8 @@ def create_assignment():
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
 		form = app.assignments.forms.AssignmentCreationForm()
 		form.peer_review_form_id.choices = [(peer_review_form.id, peer_review_form.title) for peer_review_form in PeerReviewForm.query.all()]
-		form.target_turmas.choices = [(turma.id, turma.turma_label) for turma in Turma.query.all()]
+		classes = app.classes.models.get_teacher_classes_from_teacher_id (current_user.id)
+		form.target_turmas.choices = [(turma.id, turma.turma_label) for turma in classes]
 		if form.validate_on_submit():
 			app.assignments.models.new_assignment_from_form(form)
 			flash('Assignment successfully created!', 'success')
