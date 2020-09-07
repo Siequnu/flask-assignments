@@ -65,12 +65,12 @@
   </div>
   
   
-  <a href="{{url_for('assignments.create_assignment')}}" <button class="btn btn-lg btn-success">
+  <a href="{{url_for('assignments.create_assignment')}}" <button class="btn btn-lg btn-success m-1">
     <i class="fa fa-plus-circle">
     </i> Create assignment
     </button>
   </a>
-  <a href="{{url_for('assignments.create_assignment')}}" <button class="btn btn-lg btn-info" data-toggle="modal" data-target="#chooseClassModal">
+  <a href="{{url_for('assignments.create_assignment')}}" <button class="btn btn-lg btn-info m-1" data-toggle="modal" data-target="#chooseClassModal">
     <i class="fa fa-star-half-alt">
     </i> View class grades
     </button>
@@ -147,7 +147,7 @@
                   </em>
                 </div>
                 <div class="col-12 col-lg-1">
-                  <a href="{{url_for('assignments.view_assignment_details', assignment_id = assignment.id)}}" <button
+                  <a class="viewAssignmentChevron" href="{{url_for('assignments.view_assignment_details', assignment_id = assignment.id)}}" <button
                     class="btn btn-lg btn-light">
                     <i class="fa fa-3x fa-chevron-right">
                     </i>
