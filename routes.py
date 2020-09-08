@@ -48,10 +48,11 @@ def view_assignments():
 
 
 # View details of a single assignment 
-@bp.route("/view/<assignment_id>")
+@bp.route("/view/<int:assignment_id>")
 @login_required
 def view_assignment_details(assignment_id):
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		if Assignment.query.get (assignment_id) is None: abort (404)
 		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
 		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
 		return render_template('view_assignment_details.html',
