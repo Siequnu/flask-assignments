@@ -340,3 +340,19 @@
   {% endif %}
 </div>
 {% endblock %}
+
+{% block templateScripts %}
+<script>
+  // On clicking a class tab, store the tab in memory
+	$('#myTab a').on('click', function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+		var clickedTabId = $(e.target).prop ('id');
+		localStorage.setItem('assignmentsTab', clickedTabId);
+	  })
+	
+	// On load, search storage to find if we have stored a tab
+	var savedTab = localStorage.getItem('assignmentsTab');
+	$('#' + savedTab).tab('show');
+</script>
+{% endblock %}
