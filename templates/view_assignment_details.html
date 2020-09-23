@@ -2,11 +2,10 @@
 {% block app_content %}
 <link rel="stylesheet" href="/static/css/form-control-borderless.css">
 <div class="container">
-  <br>
   <div class="container">
     <div class="row">
       <div class="col-12 col-lg-2">
-        <a href="{{url_for('assignments.view_assignments')}}" <button class="btn btn-light">
+        <a href="{{url_for('assignments.view_assignments')}}"><button class="btn btn-lg btn-light">
           <i class="fa fa-chevron-left">
           </i> Back
           </button>
@@ -20,7 +19,6 @@
       </div>
     </div>
     <hr>
-    <br>
     {% for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in assignment_info %}
     <div class="card bg-light mb-3">
       <div class="card-body">
@@ -66,31 +64,31 @@
         </div>
       </div>
       <div class="card-footer float-right">
-        <a href="{{url_for('assignments.download_assignment_uploads', assignment_id = assignment_id)}}" <button
+        <a href="{{url_for('assignments.download_assignment_uploads', assignment_id = assignment_id)}}"><button
           class="btn btn-primary">
           <i class="fa fa-download">
           </i> Download all assignments
           </button>
         </a>
-        <a href="{{url_for('assignments.edit_assignment', assignment_id = assignment.id)}}" <button
+        <a href="{{url_for('assignments.edit_assignment', assignment_id = assignment.id)}}"><button
           class="btn btn btn-outline-primary">
           <i class="fa fa-edit">
           </i> Edit
           </button>
         </a>
-        <a href="{{url_for('assignments.close_assignment', assignment_id = assignment.id)}}" <button
+        <a href="{{url_for('assignments.close_assignment', assignment_id = assignment.id)}}"><button
           class="btn btn btn-outline-warning">
           <i class="fa fa-lock">
           </i> Close assignment
           </button>
         </a>
-        <a href="{{url_for('assignments.view_grades_pdf', assignment_id = assignment.id)}}" <button
+        <a href="{{url_for('assignments.view_grades_pdf', assignment_id = assignment.id)}}"><button
           class="btn btn btn-outline-info">
           <i class="fa fa-star-half-alt">
           </i> Export grades to PDF
           </button>
         </a>
-        <a href="{{url_for('assignments.delete_assignment', assignment_id = assignment.id)}}" <button
+        <a href="{{url_for('assignments.delete_assignment', assignment_id = assignment.id)}}"><button
           class="btn btn btn-outline-danger float-right">
           <i class="fa fa-trash-alt">
           </i> Delete
@@ -99,7 +97,7 @@
       </div>
     </div>
     {% endfor %}
-    <div class="row justify-content-left">
+    <div class="row justify-content-left mb-2">
       <div class="col-12 col-md-10 col-lg-8">
         <form class="card">
           <div class="card-body row no-gutters align-items-center">
