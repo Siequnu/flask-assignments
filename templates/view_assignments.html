@@ -1,4 +1,8 @@
-{% extends "header.html" %} {% block app_content %}
+{% extends "header.html" %}
+{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/form.html' import render_field %}
+{% block app_content %}
+
 
 <!-- Modal for choosing class for export class grades-->
 <div class="modal" id="chooseClassModal" tabindex="-1" role="dialog">
@@ -13,12 +17,14 @@
       <div class="modal-body">
         <p>Choose a class to view the class grade information.</p>
         <div class="dropdown">
-          <button class="btn btn-lg btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn btn-lg btn-info dropdown-toggle" type="button" id="dropdownMenuButton"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Choose class
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             {% for turma_id, turma_label in turma_choices %}
-            <a class="dropdown-item" href="{{url_for('assignments.view_class_grades', turma_id = turma_id)}}">{{turma_label}}</a>
+            <a class="dropdown-item"
+              href="{{url_for('assignments.view_class_grades', turma_id = turma_id)}}">{{turma_label}}</a>
             {% endfor %}
           </div>
         </div>
@@ -27,8 +33,10 @@
   </div>
 </div>
 
-<!-- Main page -->
+<!-- Main page header -->
 <div class="container">
+
+  <!-- Admin view -->
   {% if admin %}
   <div class="row">
     <div class="col-12">
@@ -40,19 +48,101 @@
       <hr>
     </div>
   </div>
-  
-  
-  <!-- Help modal -->
+
+  <!-- New assignment creation modal -->
+  <div class="modal fade" id="createNewAssignmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <button type="button" class="btn btn-lg btn-outline-secondary float-right" data-dismiss="modal"
+            data-toggle="modal" data-target="#assignmentCreationHelpModal">
+            <i class="fa fa-info"></i>
+          </button>
+          <h1 class="display-5"><i class="fa fa-thumbtack"></i> New assignment</h1>
+          <hr class="my-4">
+
+          <form method="post" action="{{url_for('assignments.create_assignment')}}" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            {{ render_field(form.title) }}
+            {{ render_field(form.description) }}
+            {{ render_field(form.due_date) }}
+            {{ render_field(form.target_turmas) }}
+            {{ render_field(form.peer_review_necessary) }}
+            {{ render_field(form.peer_review_form_id) }}
+            {{ render_field(form.assignment_task_file) }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          {{ render_field(form.new_assignment_form_submit, button_style="success") }}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New assignment creation help modal -->
+  <style>
+    /* Fix scrolling issue when using multiple modals */
+    .modal {overflow-y:auto;}
+  </style>
+  <div class="modal fade" id="assignmentCreationHelpModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h1 class="display-5"><i class="fa fa-tasks"></i> Create assignment</h1>
+          <p class="lead">Here you can create an assignment for one or more classes.</p>
+          <hr class="my-4">
+          <p>You can set an assignment title and description, which will display for the students on their Home and
+            Assignment pages.</p>
+          <p>A due date must be set. After you have create the assignment, you will have the option to close it
+            immediately, which can be useful for, for example, a class exam.</p>
+          <p>In the 'For Classes' section, you can choose one of more classes which will be given this assignment. To
+            select multiple classes, hold the control key (Windows) or the command key (Mac).</p>
+          <p>If you wish to make this a peer review task, select the box. After the assignment deadline has passed, any
+            students who have submitted their work to this assignment can download, review, and upload a review to a
+            colleague's work. The peer reviews will be from the same class, and never from a different class, even if
+            you
+            selected multiple classes when creating the assignment. Each student will receive two of their colleague's
+            work for peer review, but they will only receive the second download after they have submitted their first
+            peer review. Students who have not submitted any work can not download any of their colleague's work.</p>
+          <p>If a student has not submitted their work before the deadline, a teacher can submit their work for them,
+            allowing them to, for example, participate in the peer review process.</p>
+          <p>Each assignment must have a feedback form associated with it, which will be used by teachers and, if
+            peer-review is selected, other students in the same class to submit their feedback. New feedback forms can
+            be
+            created in the peer-review form section.</p>
+          <p>In addition to, and independently of the feedback form, each assignemnt upload can receive an optional
+            graded.</p>
+          <p>Finally, you can upload a file to accompany this assignment. This an optional step, but can be a more
+            efficient way of distributing a complex task than attempting to write the instructions in the assignment
+            description, or uploading this file to the library.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" data-toggle="modal"
+            data-target="#assignmentCreationHelpModal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- Main assignment page admin help modal -->
   <div class="modal fade" id="adminHelpModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-body">
           <h1 class="display-5"><i class="fa fa-tasks"></i> Assignments</h1>
-          <p class="lead">In the Assignments section, you can set single or multiple classes group tasks with a deadline, and include an optional assignment file. </p>
+          <p class="lead">In the Assignments section, you can set single or multiple classes group tasks with a
+            deadline, and include an optional assignment file. </p>
           <hr class="my-4">
-          <p>While the deadline is open, students can replace their uploaded work, and can be encouraged to use this site as a temporary storage or backup area, while they finish their deadline.</p>
-          <p>An assignments must have a review form associated with it, which can be created in the Peer Review Form section.</p>
-          <p>If an assignments is set as a Peer Review assignments, students within the same class will be redistributed with two of their colleague's assignments, after the submission deadline is over.</p>
+          <p>While the deadline is open, students can replace their uploaded work, and can be encouraged to use this
+            site as a temporary storage or backup area, while they finish their deadline.</p>
+          <p>An assignments must have a review form associated with it, which can be created in the Peer Review Form
+            section.</p>
+          <p>If an assignments is set as a Peer Review assignments, students within the same class will be redistributed
+            with two of their colleague's assignments, after the submission deadline is over.</p>
           <p>Each task will close before the deadline, and any further assignments will not be accepted.</p>
           <p>Class grades can be analysed and exported by clicking on "View class grades".</p>
         </div>
@@ -62,24 +152,27 @@
       </div>
     </div>
   </div>
-  
-  
-  <a href="{{url_for('assignments.create_assignment')}}" <button class="btn btn-lg btn-outline-success m-1">
-    <i class="fa fa-plus-circle">
-    </i> Create assignment
+
+
+  <a href="{{url_for('assignments.create_assignment')}}"><button
+      class="btn btn-lg btn-outline-success m-1 createNewAssignmentButton" data-toggle="modal"
+      data-target="#createNewAssignmentModal">
+      <i class="fa fa-plus-circle">
+      </i> Create assignment
     </button>
   </a>
-  <a href="{{url_for('assignments.create_assignment')}}" <button class="btn btn-lg btn-outline-info m-1" data-toggle="modal" data-target="#chooseClassModal">
-    <i class="fa fa-star-half-alt">
-    </i> View class grades
+  <a href="{{url_for('assignments.create_assignment')}}"><button class="btn btn-lg btn-outline-info m-1"
+      data-toggle="modal" data-target="#chooseClassModal">
+      <i class="fa fa-star-half-alt">
+      </i> View class grades
     </button>
   </a>
-  <a href="{{url_for('files.file_stats')}}" <button class="btn btn-lg btn-outline-secondary m-1">
-    <i class="fa fa-file-word">
-    </i> View all uploads
+  <a href="{{url_for('files.file_stats')}}"><button class="btn btn-lg btn-outline-secondary m-1">
+      <i class="fa fa-file-word">
+      </i> View all uploads
     </button>
   </a>
-  
+
   <br>
   <br>
   <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -101,7 +194,8 @@
   <div class="tab-content" id="myTabContent">
     {% for class in classes %}
     {% if loop.index <=1 %}
-    <div class="tab-pane fade show active" id="class-{{class.id}}" role="tabpanel" aria-labelledby="class-{{class.id}}-tab">
+    <div class="tab-pane fade show active" id="class-{{class.id}}" role="tabpanel"
+      aria-labelledby="class-{{class.id}}-tab">
       {% else %}
       <div class="tab-pane fade" id="class-{{class.id}}" role="tabpanel" aria-labelledby="class-{{class.id}}-tab">
         {% endif %}
@@ -151,7 +245,8 @@
                   </em>
                 </div>
                 <div class="col-12 col-lg-1">
-                  <a class="viewAssignmentChevron" href="{{url_for('assignments.view_assignment_details', assignment_id = assignment.id)}}" <button
+                  <a class="viewAssignmentChevron"
+                    href="{{url_for('assignments.view_assignment_details', assignment_id = assignment.id)}}" <button
                     class="btn btn-lg btn-light">
                     <i class="fa fa-3x fa-chevron-right">
                     </i>
@@ -189,10 +284,13 @@
           <h1 class="display-5"><i class="fa fa-tasks"></i> Assignments</h1>
           <p class="lead">In the Assignments section, you can view your assignments, current and past.</p>
           <hr class="my-4">
-          <p>While the deadline is open, you can replace your uploaded work, so you can use this site as a temporary storage or backup area, while you finish their work.</p>
-          <p>If this assignments is a Peer Review, you will be given two of your colleague's work to review, but you must first upload your own work.</p>
+          <p>While the deadline is open, you can replace your uploaded work, so you can use this site as a temporary
+            storage or backup area, while you finish their work.</p>
+          <p>If this assignments is a Peer Review, you will be given two of your colleague's work to review, but you
+            must first upload your own work.</p>
           <p>Each task will close before the deadline, and any further assignments will not be accepted.</p>
-          <p>Make sure to check the My Uploads area regularly, as you will receive your teacher, TA, and colleague reviews here.</p>
+          <p>Make sure to check the My Uploads area regularly, as you will receive your teacher, TA, and colleague
+            reviews here.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -235,7 +333,7 @@
                 </li>
               </a>
               {% endif %}
-              </ul>
+            </ul>
             <em>{{assignment['description']}}
             </em>
           </div>
@@ -244,17 +342,18 @@
     </div>
     <div class="card-footer">
       {% if assignment['submitted_filename'] %}
-      <a href="{{url_for('files.download', file_id = assignment['upload'].id)}}" <button class="btn ml-1 btn-info btn-sm">
-        <i class="fa fa-file-download">
-        </i> {{assignment['submitted_filename']}}
+      <a href="{{url_for('files.download', file_id = assignment['upload'].id)}}"><button
+          class="btn ml-1 btn-info btn-sm">
+          <i class="fa fa-file-download">
+          </i> {{assignment['submitted_filename']}}
         </button>
       </a>
       {% if assignment['assignment_is_past_deadline'] %}
       {% else %}
-      <a href="{{url_for('files.replace_uploaded_file', upload_id = assignment['upload']['id'])}}" <button
-        class="btn ml-1 btn-secondary btn-sm">
-        <i class="fa fa-exchange-alt">
-        </i> Change uploaded file
+      <a href="{{url_for('files.replace_uploaded_file', upload_id = assignment['upload']['id'])}}"><button
+          class="btn ml-1 btn-secondary btn-sm">
+          <i class="fa fa-exchange-alt">
+          </i> Change uploaded file
         </button>
       </a>
       {% endif %}
@@ -289,10 +388,10 @@
         </i> Assignment overdue.
       </a>
       {% else %}
-      <a href="{{url_for('files.upload_file', assignment_id = assignment['id'])}}" <button
-        class="btn btn-sm btn-warning">
-        <i class="fa fa-file-upload">
-        </i> Upload your assignment
+      <a href="{{url_for('files.upload_file', assignment_id = assignment['id'])}}"><button
+          class="btn btn-sm btn-warning">
+          <i class="fa fa-file-upload">
+          </i> Upload your assignment
         </button>
       </a>
       {% endif %}
@@ -341,17 +440,53 @@
 {% endblock %}
 
 {% block templateScripts %}
+
+<!-- jQuery libraries -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
 <script>
   // On clicking a class tab, store the tab in memory
-	$('#myTab a').on('click', function (e) {
-		e.preventDefault();
-		$(this).tab('show');
-		var clickedTabId = $(e.target).prop ('id');
-		localStorage.setItem('assignmentsTab', clickedTabId);
-	  })
-	
-	// On load, search storage to find if we have stored a tab
-	var savedTab = localStorage.getItem('assignmentsTab');
-	$('#' + savedTab).tab('show');
+  $('#myTab a').on('click', function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+    var clickedTabId = $(e.target).prop('id');
+    localStorage.setItem('assignmentsTab', clickedTabId);
+  })
+
+  // On load, search storage to find if we have stored a tab
+  var savedTab = localStorage.getItem('assignmentsTab');
+  $('#' + savedTab).tab('show');
+</script>
+
+<!-- Assignment creation modal scripts-->
+<script>
+  $('.createNewAssignmentButton').on('click', function (event) {
+    event.preventDefault();
+  });
+
+  // Enable the datefield to use UI datepicker
+  $('#due_date').datepicker({ dateFormat: 'yy-mm-dd' });
+
+  // On clicking submit, check if the date is < today, and confirm with the user they actually mean this
+  $('#new_assignment_form_submit').on('click', function (event) {
+    var dueDate = $('#due_date').val();
+
+    // Create date from input value
+    var inputDate = new Date(dueDate);
+
+    // Get today's date
+    var todaysDate = new Date();
+
+    // call setHours to take the time out of the comparison
+    if (inputDate.setHours(0, 0, 0, 0) < todaysDate.setHours(0, 0, 0, 0)) {
+      if (confirm('The assignment due date is set in the past. Are you sure you want to continue?')) {
+        // Let the user create the assignment
+      } else {
+        event.preventDefault();
+      }
+    }
+  });
 </script>
 {% endblock %}

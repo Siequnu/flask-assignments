@@ -10,13 +10,13 @@ class AssignmentGradeForm(FlaskForm):
 	
 class AssignmentCreationForm(FlaskForm):
 	title = StringField('Assignment title', validators=[DataRequired()])
-	description = TextAreaField('Assignment description', validators=[DataRequired()])
+	description = TextAreaField('Description', validators=[DataRequired()])
 	due_date = DateField('Due date:', validators=[DataRequired()])
-	target_turmas = SelectMultipleField('For classes', coerce=int, validators=[DataRequired()])
-	peer_review_necessary = BooleanField('Peer review necessary', default=True)
+	target_turmas = SelectMultipleField('For class(es):', coerce=int, validators=[DataRequired()])
+	peer_review_necessary = BooleanField('Peer review necessary', default=False)
 	peer_review_form_id = SelectField('Feedback form', coerce=int, validators=[DataRequired()])
 	assignment_task_file = FileField(label='Assignment Task File')
-	submit = SubmitField('Create')
+	new_assignment_form_submit = SubmitField('Create')
 	
 class TurmaCreationForm(FlaskForm):
 	turma_number = StringField('Class number', validators=[DataRequired()])
