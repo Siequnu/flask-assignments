@@ -59,7 +59,12 @@ def view_assignments():
 @login_required
 def view_assignment_details(assignment_id):
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
-		if Assignment.query.get (assignment_id) is None: abort (404)
+		assignment = Assignment.query.get (assignment_id)
+		if assignment is None: abort (404)
+
+		if app.classes.models.check_if_turma_id_belongs_to_a_teacher (assignment.target_turma_id, current_user.id) is False:
+			abort (403)
+		
 		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
 		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
 		return render_template('view_assignment_details.html',
@@ -73,7 +78,7 @@ def view_assignment_details(assignment_id):
 # Route to download an assignment information file
 @bp.route('/download/taskfile/<assignment_id>')
 @login_required
-def download_assignment_file(assignment_id):
+def download_assignment_file(assignment_id):	
 	# Check if the user is part of this file's class
 	if app.models.is_admin(current_user.username) or db.session.query(
 		Enrollment, Assignment).join(
@@ -179,11 +184,13 @@ def delete_assignment(assignment_id):
 @login_required
 def close_assignment(assignment_id):
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
-		try: 
-			assignment = Assignment.query.get(assignment_id)
-		except:
+		assignment = Assignment.query.get(assignment_id)
+		if assignment is None:
 			flash ('Could not find the assignment.', 'error')
 			return redirect(url_for('assignments.view_assignments'))
+
+		if app.classes.models.check_if_turma_id_belongs_to_a_teacher (assignment.target_turma_id, current_user.id) is False:
+			abort (403)
 		try:
 			if app.assignments.models.check_if_assignment_is_over(assignment_id):
 				flash ('This assignment is already closed.')
