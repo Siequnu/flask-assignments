@@ -382,6 +382,9 @@ def view_class_grades(turma_id, pdf = False):
 		turma = Turma.query.get(turma_id)
 		if turma is None: abort (404)
 		
+		if app.classes.models.check_if_turma_id_belongs_to_a_teacher (turma_id, current_user.id) is False:
+			abort (403)
+
 		# Compile the grades information
 		assignments = Assignment.query.filter_by (target_turma_id = turma_id)
 		class_grade_info = []
