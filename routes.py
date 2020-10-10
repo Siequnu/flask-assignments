@@ -238,7 +238,9 @@ def create_teacher_review(upload_id):
 			Upload, Upload.assignment_id == Assignment.id).filter(
 			Upload.id == upload_id).first().peer_review_form_id
 		form_data = PeerReviewForm.query.get(peer_review_form_id).serialised_form_data
-		form_loader = app.assignments.formbuilder.formLoader(form_data, (url_for('assignments.create_teacher_review', upload_id=upload_id)))
+		form_loader = app.assignments.formbuilder.formLoader(
+			form_data, 
+			(url_for('assignments.create_teacher_review', upload_id=upload_id)))
 		render_form = form_loader.render_form()
 		
 		# Insert the file upload HTML into the rendered form
@@ -460,35 +462,55 @@ def view_class_grades(turma_id, pdf = False):
 @bp.route("/review/view/<comment_id>")
 @login_required
 def view_peer_review(comment_id):
+	# Only allowed to view: commented file owner, comment author, or admin
 	if current_user.id is models.get_file_owner_id (
 		Comment.query.get(comment_id).file_id) or current_user.id is app.assignments.models.get_comment_author_id_from_comment(
 		comment_id) or app.models.is_admin(current_user.username):
 	
+		# Get the peer review form ID
 		peer_review_form_id = db.session.query(Assignment).join(
 			Comment, Assignment.id==Comment.assignment_id).filter(
 			Comment.id==comment_id).first().peer_review_form_id
 		
+		# JSON load the form contents
 		form_contents = json.loads(Comment.query.get(comment_id).comment)
 		
 		# Get any uploaded file, if applicable
 		comment_file_upload = db.session.query(CommentFileUpload).filter_by(
 			comment_id = comment_id).first()
 		
-		
+		# If the user viewing this is the author, display a message indicating the review can not be edited
 		if current_user.id is app.assignments.models.get_comment_author_id_from_comment(
 		comment_id):
 			flash('You can not edit this peer review as it has already been submitted.', 'info')
 			
+		# Load the form (fields)
 		form_data = PeerReviewForm.query.get(peer_review_form_id).serialised_form_data
 
-		form_loader = app.assignments.formbuilder.formLoader(form_data,
-															 (url_for('files.view_comments', file_id = Comment.query.get(comment_id).file_id)),
-															 submit_label = 'Return',
-															 data_array = form_contents)
+		# Populate the form fields with the serialised data
+		form_loader = app.assignments.formbuilder.formLoader(
+			form_data,
+			(url_for('files.view_comments', file_id = Comment.query.get(comment_id).file_id)),
+			submit_label = 'Return',
+			form_method = 'POST',
+			data_array = form_contents)
 		render_form = form_loader.render_form()
-		return render_template('form_builder_render.html',
-							   render_form=render_form, title = 'Peer review',
-							   comment_file_upload = comment_file_upload)
+		
+		# Assign the correct form action
+		# If we are the comment author, redirect to assignments
+		if current_user.id is app.assignments.models.get_comment_author_id_from_comment(comment_id):
+			form_action = url_for('assignments.view_assignments')
+		# If we are the file owner redirect to view our other comments
+		else:
+			form_action = url_for('files.view_comments', file_id = Comment.query.get(comment_id).file_id)
+		
+		return render_template(
+			'form_builder_render.html',
+			render_form=render_form, title = 'Peer review',
+			comment_file_upload = comment_file_upload,
+			do_not_display_csrf_token = True, # As we are sharing this form with other methods which will POST, and need it
+			form_method = 'GET',
+			form_action = form_action)
 		
 	else: abort (403)
 	
@@ -627,8 +649,9 @@ def render(form_id = False):
 		form_data = session['form_data']
 		session['form_data'] = None
 
-	form_loader = app.assignments.formbuilder.formLoader(form_data, (url_for('assignments.submit')))
+	form_loader = app.assignments.formbuilder.formLoader(form_data, 'nosubmit')
 	render_form = form_loader.render_form()
+	print (render_form)
 	
 	return render_template('form_builder_render.html', render_form=render_form)
 

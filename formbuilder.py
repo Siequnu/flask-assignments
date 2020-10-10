@@ -6,11 +6,13 @@ import json
 
 class formLoader:
 	
-	def __init__(self, form_json, form_action, submit_label = 'Submit', data_array = False):
+	def __init__(self, form_json, form_action, submit_label = 'Submit', data_array = False, form_method = 'POST'):
 		self.form_data = json.loads(form_json.replace('\\', ''))
+		# 'nosubmit' will return a form without the submit field
 		self.action = form_action
 		self.submit_label = str(submit_label)
 		self.data_array = data_array
+		self.form_method = form_method
 
 	def render_form(self):
 		"""
@@ -52,11 +54,12 @@ class formLoader:
 		"""
 		Render the form header
 		"""
-		html = '''<form action="{0}" method="post" accept-charset="utf-8" role="form" novalidate="novalidate" >'''.format(self.action);
+		html = '''<form action="{0}" method="{1}" accept-charset="utf-8" role="form" novalidate="novalidate" >'''.format(self.action, self.form_method);
 		html += '''<div class="form-title">'''
 		html += '''<h2>{0}</h2><h3>{1}</h3>'''.format(self.form_data['title'], self.form_data['description'])
 		html += fields
-		html += '''<button type="submit" class="btn btn-primary">{0}</button>'''.format(self.submit_label)
+		if self.action is not 'nosubmit':
+			html += '''<button type="submit" class="btn btn-primary">{0}</button>'''.format(self.submit_label)
 		html += '''</div></form>'''
 
 		return html

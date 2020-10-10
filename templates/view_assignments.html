@@ -44,14 +44,14 @@
         data-target="#adminHelpModal">
         <i class="fa fa-info"></i>
       </button>
-      <h1><i class="fa fa-tasks"></i> View assignments</h1>
+      <h1><i class="fa fa-tasks"></i> Assignments</h1>
       <hr>
     </div>
   </div>
 
   <!-- New assignment creation modal -->
   <div class="modal fade" id="createNewAssignmentModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-body">
           <button type="button" class="btn btn-lg btn-outline-secondary float-right" data-dismiss="modal"
@@ -86,7 +86,7 @@
     .modal {overflow-y:auto;}
   </style>
   <div class="modal fade" id="assignmentCreationHelpModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-body">
           <h1 class="display-5"><i class="fa fa-tasks"></i> Create assignment</h1>
@@ -130,7 +130,7 @@
 
   <!-- Main assignment page admin help modal -->
   <div class="modal fade" id="adminHelpModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-body">
           <h1 class="display-5"><i class="fa fa-tasks"></i> Assignments</h1>
@@ -171,6 +171,11 @@
       <i class="fa fa-file-word">
       </i> View all uploads
     </button>
+  </a>
+  <a href="{{url_for('assignments.peer_review_form_admin')}}"><button class="btn btn-lg btn-outline-primary m-1">
+    <i class="fa fa-file-signature">
+    </i> Feedback forms
+  </button>
   </a>
 
   <br>

@@ -35,9 +35,14 @@
                 </div>
 
                 {% endif %}
+
+                <!-- Display the form -->
                 <div class="col-xs-12 col-md-6 col-sm-offset-3">
-                    <form method="post">
+                    <form method="{{form_method if form_method else 'POST'}}" action="{{form_action if form_action else ''}}">
+                        {% if do_not_display_csrf_token %}
+                        {% else %}
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                        {% endif %}
                         {{ render_form|safe }}
                     </form>
 

@@ -181,13 +181,15 @@
                   <td>
                     {% if user.grade is defined and user.grade.grade is defined %}
                     {{user.grade.grade}}
-                    {% else %}
+                    {% elif user.upload.original_filename %}
                     <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}" <button
                       class="btn btn-sm btn-outline-info">
                       <i class="fa fa-star-half-alt">
                       </i> Grade
                       </button>
                     </a>
+                    {% else %}
+                    
                     {% endif %}
                   </td>
                   <td>
