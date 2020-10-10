@@ -444,22 +444,25 @@
 {% block templateScripts %}
 
 <!-- jQuery libraries -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 <script>
-  // On clicking a class tab, store the tab in memory
-  $('#myTab a').on('click', function (e) {
-    e.preventDefault();
-    $(this).tab('show');
-    var clickedTabId = $(e.target).prop('id');
-    localStorage.setItem('assignmentsTab', clickedTabId);
-  })
+  $(document).ready(function () {
+  
+    // On clicking a class tab, store the tab in memory
+    $('#myTab a').on('click', function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+      var clickedTabId = $(e.target).prop('id');
+      localStorage.setItem('assignmentsTab', clickedTabId);
+    })
 
-  // On load, search storage to find if we have stored a tab
-  var savedTab = localStorage.getItem('assignmentsTab');
-  $('#' + savedTab).tab('show');
+    // On load, search storage to find if we have stored a tab
+    var savedTab = localStorage.getItem('assignmentsTab');
+    console.log (savedTab);
+    $('#' + savedTab).tab('show');
+  });
 </script>
 
 <!-- Assignment creation modal scripts-->
@@ -491,4 +494,5 @@
     }
   });
 </script>
+
 {% endblock %}
