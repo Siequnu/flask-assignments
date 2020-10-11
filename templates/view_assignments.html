@@ -331,7 +331,7 @@
               {% if assignment['assignment_task_filename'] %}
               <a href="{{url_for('assignments.download_assignment_file', assignment_id = assignment['id'])}}">
                 <li class="m-1 list-inline-item">
-                  <button class="btn btn-primary btn-sm">
+                  <button class="btn btn-info btn-sm">
                     <i class="fa fa-file-download">
                     </i> Download assignment handout
                   </button>
@@ -390,7 +390,7 @@
       {% endif %} {% else %} {% if assignment['assignment_is_past_deadline'] %}
       <a href="#" class="btn btn-danger btn-sm disabled" role="button" aria-disabled="true">
         <i class="fa fa-clock">
-        </i> Assignment overdue.
+        </i> Assignment overdue
       </a>
       {% else %}
       <a href="{{url_for('files.upload_file', assignment_id = assignment['id'])}}"><button
