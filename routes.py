@@ -370,6 +370,8 @@ def view_grades_pdf(assignment_id):
 		assignment = Assignment.query.get(assignment_id)
 		if assignment is None: abort (404)
 		
+		#¡# Check if this user owns this assignment? 
+
 		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
 		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
 		

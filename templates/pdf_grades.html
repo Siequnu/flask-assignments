@@ -3,7 +3,7 @@
 <!-- Custom fonts for this template -->
 <link href="/static/bootstrap/css/flatly.min.css" rel="stylesheet">
 
-<!-- The custom font numbers are not working properly, so use system fonts instead-->
+<!-- Arabic numbers (0-9) are not working properly with custom fonts, so use system fonts instead-->
 <style>
         h1, h2, h3,
         body,
@@ -84,7 +84,7 @@
                         class="table table-responsive table-striped table-bordered table-hover table-sm">
                         <thead>
                                 <tr>
-                                        <th>#</th>
+                                        <th>Student number</th>
                                         <th>Name</th>
                                         <th>Upload</th>
                                         <th>Time</th>
@@ -112,7 +112,7 @@
                                         </td>
                                         {% endif %}
                                         <td>
-                                                {% if user.grade.grade is defined %}
+                                                {% if user.grade %}
                                                 {{user.grade.grade}}
                                                 {% else %}
                                                 N/A
