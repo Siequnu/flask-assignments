@@ -65,7 +65,7 @@
       </div>
       <div class="card-footer float-right">
         <a href="{{url_for('assignments.download_assignment_uploads', assignment_id = assignment_id)}}"><button
-          class="btn btn-primary">
+          class="btn btn-outline-info">
           <i class="fa fa-download">
           </i> Download all assignments
           </button>
@@ -83,7 +83,7 @@
           </button>
         </a>
         <a href="{{url_for('assignments.view_grades_pdf', assignment_id = assignment.id)}}"><button
-          class="btn btn btn-outline-info">
+          class="btn btn btn-outline-primary">
           <i class="fa fa-star-half-alt">
           </i> Export grades to PDF
           </button>
@@ -108,7 +108,7 @@
             <!--end of col-->
             <div class="col">
               <input id="myInput" class="form-control form-control-lg form-control-borderless" type="search"
-                placeholder="Search for students or titles">
+                placeholder="Search for students or uploads">
             </div>
             <!--end of col-->
           </div>
@@ -131,7 +131,7 @@
           <div class="table-responsive">
             <table summary="Student uploads for this task"  
               class="table table-responsive table-striped table-bordered table-hover table-sm">
-              <thead class="thead-dark">
+              <thead class="thead">
                 <tr>
                   <th><i class="fa fa-id-card-alt"></i></th>
                   <th><i class="fa fa-signature"></i></th>
@@ -164,14 +164,14 @@
                   {% endif %}
                   <td>
                     {% if user.comments|length > 0 %}
-                    <a href="{{url_for('files.view_comments', file_id = user.upload.id)}}" <button
+                    <a href="{{url_for('files.view_comments', file_id = user.upload.id)}}"><button
                       class="btn btn-sm btn-light">
                       <i class="fa fa-comment-alt">
                       </i> {{user.comments|length}}
                       </button>
                     </a>
                     {% else %}
-                    <a href="" <button class="btn btn-sm btn-light disabled">
+                    <a href=""><button class="btn btn-sm btn-light disabled">
                       <i class="fa fa-comment-alt">
                       </i> {{user.comments|length}}
                       </button>
@@ -182,7 +182,7 @@
                     {% if user.grade is defined and user.grade.grade is defined %}
                     {{user.grade.grade}}
                     {% elif user.upload.original_filename %}
-                    <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}" <button
+                    <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}"><button
                       class="btn btn-sm btn-outline-info">
                       <i class="fa fa-star-half-alt">
                       </i> Grade
@@ -194,26 +194,26 @@
                   </td>
                   <td>
                     {% if user.upload.original_filename %}
-                    <a href="{{url_for('files.download', file_id = user.upload.id, rename=True)}}" <button
+                    <a href="{{url_for('files.download', file_id = user.upload.id, rename=True)}}"><button
                       class="btn btn-sm btn-outline-primary">
                       <i class="fa fa-download">
                       </i> Download
                       </button>
                     </a>
-                    <a href="{{url_for('assignments.create_teacher_review', upload_id = user.upload.id)}}" <button
+                    <a href="{{url_for('assignments.create_teacher_review', upload_id = user.upload.id)}}"><button
                       class="btn btn-sm btn-outline-secondary">
                       <i class="fa fa-highlighter">
                       </i> Review
                       </button>
                     </a>
-                    <a href="{{url_for('files.delete_file', upload_id = user.upload.id)}}" <button
+                    <a href="{{url_for('files.delete_file', upload_id = user.upload.id)}}"><button
                       class="btn btn-sm btn-outline-danger">
                       <i class="fa fa-trash-alt">
                       </i> Delete
                       </button>
                     </a>
                     {% else %}
-                    <a href="{{url_for('files.upload_file', assignment_id = assignment_id, user_id = user.id)}}" <button
+                    <a href="{{url_for('files.upload_file', assignment_id = assignment_id, user_id = user.id)}}"><button
                       class="btn btn-sm btn-block btn-outline-success">
                       <i class="fa fa-user-check">
                       </i> Submit for student

@@ -21,6 +21,7 @@ from app.assignments.formbuilder import formLoader
 
 from flask_weasyprint import HTML, render_pdf
 
+
 # View created assignments status
 @bp.route("/view/", methods=['GET', 'POST'])
 @login_required
