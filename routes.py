@@ -654,7 +654,6 @@ def render(form_id = False):
 
 	form_loader = app.assignments.formbuilder.formLoader(form_data, 'nosubmit')
 	render_form = form_loader.render_form()
-	print (render_form)
 	
 	return render_template('form_builder_render.html', render_form=render_form)
 
