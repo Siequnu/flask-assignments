@@ -253,11 +253,11 @@ def delete_assignment_from_id (assignment_id):
 	
 	# Delete assignment first, as this references the task files (foreign key)
 	Assignment.query.filter_by(id=assignment_id).delete()
-		
-	# Delete assignment_task_file, if it exists
-	#¡# This should only delete the task file if it is the LAST assignment
-	#if assignment_task_file_id is not None:
-		#AssignmentTaskFile.query.filter_by(id=assignment_task_file_id).delete()
+
+	# Delete assignment_task_file, if there are no other assignments that reference it
+	task_file_links = Assignment.query.filter_by (assignment_task_file_id = assignment_task_file_id).all()
+	if len(task_file_links) < 1: # i.e., we have deleted the last assignment that used this
+		AssignmentTaskFile.query.filter_by(id=assignment_task_file_id).delete()
 
 	db.session.commit()
 	return True
