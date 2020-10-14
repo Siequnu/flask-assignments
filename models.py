@@ -45,7 +45,7 @@ def get_assignment_info (assignment_id = False):
 	else:
 		assignment_info = db.session.query(Assignment, User, Turma).join(
 		User, Assignment.created_by_id == User.id).join(
-		Turma, Assignment.target_turma_id==Turma.id).all()
+		Turma, Assignment.target_turma_id==Turma.id).order_by(Assignment.due_date.asc()).all()
 	
 	for assignment, user, turma in assignment_info:
 		students_in_class = Enrollment.query.filter(Enrollment.turma_id == turma.id).all()
