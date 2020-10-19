@@ -205,7 +205,7 @@ def get_comment_author_id_from_comment (comment_id):
 	return Comment.query.get(comment_id).user_id
 
 def get_assignments_from_turma_id (turma_id):
-	return Assignment.query.filter_by(target_turma_id=turma_id).all()
+	return Assignment.query.filter_by(target_turma_id=turma_id).order_by(Assignment.due_date.asc()).all()
 
 def new_assignment_from_form (form):
 	if form.assignment_task_file.data is not None:
