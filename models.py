@@ -136,7 +136,7 @@ def get_user_assignment_info (user_id, assignment_id = False):
 		assignment_dict = assignment.__dict__
 		
 		assignment_dict['assignment_is_past_deadline'] = check_if_assignment_is_over(assignment_dict['id'])
-		assignment_dict['humanized_due_date'] = arrow.get(assignment_dict['due_date']).humanize()
+		assignment_dict['humanized_due_date'] = arrow.get(assignment_dict['due_date']).shift(hours=+16).humanize()
 		
 		if assignment_dict['assignment_task_file_id'] is not None:
 			assignment_dict['assignment_task_filename'] = AssignmentTaskFile.query.get(assignment_dict['assignment_task_file_id']).original_filename
