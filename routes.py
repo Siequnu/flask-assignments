@@ -24,8 +24,9 @@ from flask_weasyprint import HTML, render_pdf
 
 # View created assignments status
 @bp.route("/view/", methods=['GET', 'POST'])
+@bp.route("/view/<view>")
 @login_required
-def view_assignments():
+def view_assignments(view = 'all'):
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
 		# Get admin view with all assignments
 		clean_assignments_array = app.assignments.models.get_assignment_info()
@@ -37,8 +38,22 @@ def view_assignments():
 		form.peer_review_form_id.choices = [(peer_review_form.id, peer_review_form.title) for peer_review_form in PeerReviewForm.query.all()]
 		form.target_turmas.choices = turma_choices
 
+		# Filter the assignments as desired
+		filtered_assignments = []
+		if view == 'past':
+			for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in clean_assignments_array:
+				if assignment.due_date <= datetime.date.today():
+					filtered_assignments.append ((assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class))
+			clean_assignments_array = filtered_assignments
+		elif view == 'future':
+			for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in clean_assignments_array:
+				if assignment.due_date >= datetime.date.today():
+					filtered_assignments.append ((assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class))
+			clean_assignments_array = filtered_assignments
+
 		return render_template('view_assignments.html',
 			assignments_array = clean_assignments_array,
+			view = view,
 			admin = True,
 			classes=classes,
 			turma_choices = turma_choices,

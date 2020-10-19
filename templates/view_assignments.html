@@ -177,6 +177,28 @@
     </i> Feedback forms
   </button>
   </a>
+  <div class="btn-group m-1">
+    <button id="generate-dropdown" type="button"
+      class="btn btn-lg btn-outline-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      <span class="sr-only">Toggle Dropdown</span>
+      <i class="fa fa-filter"></i>
+      {% if view == 'all' %}
+      View all assignments
+      {% elif view == 'past' %}
+      View past assignments
+      {% elif view == 'future' %}
+      View future assignments
+      {% else %}
+      View all assignments
+      {% endif %}
+    </button>
+    <div class="dropdown-menu turma-dropdown">
+      <a class="dropdown-item" href="{{url_for('assignments.view_assignments', view = 'past')}}">Past assignments</a>
+      <a class="dropdown-item" href="{{url_for('assignments.view_assignments', view = 'all')}}">All assignments</a>
+      <a class="dropdown-item" href="{{url_for('assignments.view_assignments', view = 'future')}}">Future assignments</a>
+    </div>
+  </div>
 
   <br>
   <br>
