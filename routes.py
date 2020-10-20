@@ -485,7 +485,7 @@ def view_class_grades(turma_id, pdf = False):
 @login_required
 def view_peer_review(comment_id):
 	# Only allowed to view: commented file owner, comment author, or admin
-	if current_user.id is models.get_file_owner_id (
+	if current_user.id == models.get_file_owner_id (
 		Comment.query.get(comment_id).file_id) or current_user.id is app.assignments.models.get_comment_author_id_from_comment(
 		comment_id) or app.models.is_admin(current_user.username):
 	
@@ -502,7 +502,7 @@ def view_peer_review(comment_id):
 			comment_id = comment_id).first()
 		
 		# If the user viewing this is the author, display a message indicating the review can not be edited
-		if current_user.id is app.assignments.models.get_comment_author_id_from_comment(
+		if current_user.id == app.assignments.models.get_comment_author_id_from_comment(
 		comment_id):
 			flash('You can not edit this peer review as it has already been submitted.', 'info')
 			
@@ -520,7 +520,7 @@ def view_peer_review(comment_id):
 		
 		# Assign the correct form action
 		# If we are the comment author, redirect to assignments
-		if current_user.id is app.assignments.models.get_comment_author_id_from_comment(comment_id):
+		if current_user.id == app.assignments.models.get_comment_author_id_from_comment(comment_id):
 			form_action = url_for('assignments.view_assignments')
 		# If we are the file owner redirect to view our other comments
 		else:
