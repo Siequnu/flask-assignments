@@ -113,7 +113,6 @@ def enroll_user_in_class (user_id, turma_id):
 		db.session.add(new_enrollment)
 		db.session.commit()
 
-
 def get_user_assignment_info (user_id, assignment_id = False):
 	
 	assignments = []
