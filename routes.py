@@ -45,11 +45,13 @@ def view_assignments(view = False):
 		# Filter the assignments as desired
 		filtered_assignments = []
 		if session.get('assignmentsViewAs') == 'past':
+			flash ('You are only viewing past assignments', 'info')
 			for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in clean_assignments_array:
 				if assignment.due_date <= datetime.date.today():
 					filtered_assignments.append ((assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class))
 			clean_assignments_array = filtered_assignments
 		elif session.get('assignmentsViewAs') == 'future':
+			flash ('You are only viewing future assignments', 'info')
 			for assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class in clean_assignments_array:
 				if assignment.due_date >= datetime.date.today():
 					filtered_assignments.append ((assignment, user, turma, uploaded_assignments, uncomplete_assignments, assignment_task_filename, peer_review_form_title, students_in_class))
