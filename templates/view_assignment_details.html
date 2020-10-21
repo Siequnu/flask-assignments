@@ -183,7 +183,7 @@
                     {{user.grade.grade}}
                     {% elif user.upload.original_filename %}
                     <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}"><button
-                      class="btn btn-sm btn-outline-info">
+                      class="btn btn btn-block btn-outline-info m-1">
                       <i class="fa fa-star-half-alt">
                       </i> Grade
                       </button>
@@ -195,19 +195,19 @@
                   <td>
                     {% if user.upload.original_filename %}
                     <a href="{{url_for('files.download', file_id = user.upload.id, rename=True)}}"><button
-                      class="btn btn-sm btn-outline-primary">
+                      class="btn btn-sm btn-block btn-outline-primary m-1">
                       <i class="fa fa-download">
                       </i> Download
                       </button>
                     </a>
                     <a href="{{url_for('assignments.create_teacher_review', upload_id = user.upload.id)}}"><button
-                      class="btn btn-sm btn-outline-secondary">
+                      class="btn btn-sm btn-outline-info m-1">
                       <i class="fa fa-highlighter">
                       </i> Review
                       </button>
                     </a>
                     <a href="{{url_for('files.delete_file', upload_id = user.upload.id)}}"><button
-                      class="btn btn-sm btn-outline-danger">
+                      class="btn btn-sm btn-outline-danger m-1">
                       <i class="fa fa-trash-alt">
                       </i> Delete
                       </button>

@@ -320,6 +320,7 @@ def create_teacher_review(upload_id):
 			assignment_info = assignment_info,
 			user_info = user_info,
 			class_info = class_info,
+			display_back_button = True,
 			form=form_html,
 			admin_file_upload = True)
 	abort (403)
