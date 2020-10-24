@@ -13,7 +13,7 @@
       <h4><i class="fa fa-user"></i> {{class_info.turma_label}}</h4>
       <br>
       <h4><i class="fa fa-id-badge"></i> {{user_info.student_number}} - {{user_info.username}}</h4>
-      <a href="{{url_for('files.download', file_id = upload.id, rename=True)}}" <button
+      <a href="{{url_for('files.download', file_id = upload.id)}}" <button
         class="btn btn-sm btn-outline-primary">
         <i class="fa fa-download">
         </i> Download

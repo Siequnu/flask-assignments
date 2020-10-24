@@ -194,7 +194,7 @@
                   </td>
                   <td>
                     {% if user.upload.original_filename %}
-                    <a class="downloadFile" href="{{url_for('files.download', file_id = user.upload.id, rename=True)}}"><button
+                    <a class="downloadFile" href="{{url_for('files.download', file_id = user.upload.id)}}"><button
                         class="btn btn-sm btn-block btn-outline-primary m-1">
                         <i class="fa fa-download">
                         </i> Download
@@ -242,48 +242,63 @@
   <script type="text/javascript">
     $(function () {
 
-      // On iOS override the download function
+      // Function to either show a file in a share sheet or download it
       var jsDownloadOverride = function (href) {
-        fetch(href)
+
+        // Get the fileID from parsing the href
+        var filename = '';
+        var fileId = href.split('/').pop();
+        
+        // Obtain the filename by using the filename API
+        fetch('/files/api/filename/' + fileId).then(res => res.json()).then(data => {
+          filename = data.filename;
+        }).then(
+          
+        // Download the file into a blob
+          fetch(href)
           .then(function (response) {
             return response.blob()
           })
           .then(function (blob) {
 
-            var file = new File([blob], "Test download file", {
+            // Create a file out of the blob
+            var file = new File([blob], filename, {
               type: 'application/octet-stream'
             });
             var filesArray = [file];
 
+            // If we can share (i.e., iOS share card)
             if (navigator.canShare && navigator.canShare({
                 files: filesArray
               })) {
               navigator.share({
-                text: 'workUp.academy assignment',
+                text: 'workUp.academy assignment' + filename,
                 files: filesArray,
-                title: 'workUp.academy Assignment',
+                title: filename,
                 url: 'www.workup.academy'
               });
+            // Otherwise, send it for normal download
             } else {
-              saveAs(blob, 'workUp assignment');
+              saveAs(blob, filename);
             }
-          });
+          })
+        );
       };
 
-      $('.downloadFile').on ('click', function (event) 
-      {  
+      // Activate share override if iOS check is true
+      $('.downloadFile').on('click', function (event) {
         if (checkIfIOS) {
           // Stop the default downloading mechanism
-          event.preventDefault ();
-          event.stopImmediatePropagation ();
+          event.preventDefault();
+          event.stopImmediatePropagation();
 
           // Trigger the sharing mechanism
-          jsDownloadOverride (event.delegateTarget.href);
+          jsDownloadOverride(event.delegateTarget.href);
         }
       });
 
       // Function to check if a user agent is iOS
-      var checkIfIOS = function iOS() {
+      var checkIfIOS = function () {
         return [
             'iPad Simulator',
             'iPhone Simulator',
@@ -296,10 +311,6 @@
           ||
           (navigator.userAgent.includes("Mac") && "ontouchend" in document)
       };
-
-      if (checkIfIOS) {
-        
-      }
     });
   </script>
   {% endblock %}
