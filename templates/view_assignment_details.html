@@ -6,8 +6,8 @@
     <div class="row">
       <div class="col-12 col-lg-2">
         <a href="{{url_for('assignments.view_assignments')}}"><button class="btn btn-lg btn-light">
-          <i class="fa fa-chevron-left">
-          </i> Back
+            <i class="fa fa-chevron-left">
+            </i> Back
           </button>
         </a>
       </div>
@@ -65,33 +65,33 @@
       </div>
       <div class="card-footer float-right">
         <a href="{{url_for('assignments.download_assignment_uploads', assignment_id = assignment_id)}}"><button
-          class="btn btn-outline-info">
-          <i class="fa fa-download">
-          </i> Download all assignments
+            class="btn btn-outline-info">
+            <i class="fa fa-download">
+            </i> Download all assignments
           </button>
         </a>
         <a href="{{url_for('assignments.edit_assignment', assignment_id = assignment.id)}}"><button
-          class="btn btn btn-outline-primary">
-          <i class="fa fa-edit">
-          </i> Edit
+            class="btn btn btn-outline-primary">
+            <i class="fa fa-edit">
+            </i> Edit
           </button>
         </a>
         <a href="{{url_for('assignments.close_assignment', assignment_id = assignment.id)}}"><button
-          class="btn btn btn-outline-warning">
-          <i class="fa fa-lock">
-          </i> Close assignment
+            class="btn btn btn-outline-warning">
+            <i class="fa fa-lock">
+            </i> Close assignment
           </button>
         </a>
         <a href="{{url_for('assignments.view_grades_pdf', assignment_id = assignment.id)}}"><button
-          class="btn btn btn-outline-primary">
-          <i class="fa fa-star-half-alt">
-          </i> Export grades to PDF
+            class="btn btn btn-outline-primary">
+            <i class="fa fa-star-half-alt">
+            </i> Export grades to PDF
           </button>
         </a>
         <a href="{{url_for('assignments.delete_assignment', assignment_id = assignment.id)}}"><button
-          class="btn btn btn-outline-danger float-right">
-          <i class="fa fa-trash-alt">
-          </i> Delete
+            class="btn btn btn-outline-danger float-right">
+            <i class="fa fa-trash-alt">
+            </i> Delete
           </button>
         </a>
       </div>
@@ -129,7 +129,7 @@
       <div class="row">
         <div class="col-xs-12">
           <div class="table-responsive">
-            <table summary="Student uploads for this task"  
+            <table summary="Student uploads for this task"
               class="table table-responsive table-striped table-bordered table-hover table-sm">
               <thead class="thead">
                 <tr>
@@ -165,15 +165,15 @@
                   <td>
                     {% if user.comments|length > 0 %}
                     <a href="{{url_for('files.view_comments', file_id = user.upload.id)}}"><button
-                      class="btn btn-sm btn-light">
-                      <i class="fa fa-comment-alt">
-                      </i> {{user.comments|length}}
+                        class="btn btn-sm btn-light">
+                        <i class="fa fa-comment-alt">
+                        </i> {{user.comments|length}}
                       </button>
                     </a>
                     {% else %}
                     <a href=""><button class="btn btn-sm btn-light disabled">
-                      <i class="fa fa-comment-alt">
-                      </i> {{user.comments|length}}
+                        <i class="fa fa-comment-alt">
+                        </i> {{user.comments|length}}
                       </button>
                     </a>
                     {% endif %}
@@ -183,40 +183,40 @@
                     {{user.grade.grade}}
                     {% elif user.upload.original_filename %}
                     <a href="{{url_for('assignments.grade_assignment', upload_id = user.upload.id)}}"><button
-                      class="btn btn btn-block btn-outline-info m-1">
-                      <i class="fa fa-star-half-alt">
-                      </i> Grade
+                        class="btn btn btn-block btn-outline-info m-1">
+                        <i class="fa fa-star-half-alt">
+                        </i> Grade
                       </button>
                     </a>
                     {% else %}
-                    
+
                     {% endif %}
                   </td>
                   <td>
                     {% if user.upload.original_filename %}
-                    <a href="{{url_for('files.download', file_id = user.upload.id, rename=True)}}"><button
-                      class="btn btn-sm btn-block btn-outline-primary m-1">
-                      <i class="fa fa-download">
-                      </i> Download
+                    <a class="downloadFile" href="{{url_for('files.download', file_id = user.upload.id, rename=True)}}"><button
+                        class="btn btn-sm btn-block btn-outline-primary m-1">
+                        <i class="fa fa-download">
+                        </i> Download
                       </button>
                     </a>
                     <a href="{{url_for('assignments.create_teacher_review', upload_id = user.upload.id)}}"><button
-                      class="btn btn-sm btn-outline-info m-1">
-                      <i class="fa fa-highlighter">
-                      </i> Review
+                        class="btn btn-sm btn-outline-info m-1">
+                        <i class="fa fa-highlighter">
+                        </i> Review
                       </button>
                     </a>
                     <a href="{{url_for('files.delete_file', upload_id = user.upload.id)}}"><button
-                      class="btn btn-sm btn-outline-danger m-1">
-                      <i class="fa fa-trash-alt">
-                      </i> Delete
+                        class="btn btn-sm btn-outline-danger m-1">
+                        <i class="fa fa-trash-alt">
+                        </i> Delete
                       </button>
                     </a>
                     {% else %}
                     <a href="{{url_for('files.upload_file', assignment_id = assignment_id, user_id = user.id)}}"><button
-                      class="btn btn-sm btn-block btn-outline-success">
-                      <i class="fa fa-user-check">
-                      </i> Submit for student
+                        class="btn btn-sm btn-block btn-outline-success">
+                        <i class="fa fa-user-check">
+                        </i> Submit for student
                       </button>
                     </a>
                     {% endif %}
@@ -235,6 +235,68 @@
       </div>
     </div>
   </div>
-  <script src="/static/js/sortable-table.js">
+
+  <script src="/static/js/sortable-table.js"></script>
+
+  <script type="text/javascript">
+    $(function () {
+
+      // On iOS override the download function
+      var jsDownloadOverride = function (href) {
+        fetch(href)
+          .then(function (response) {
+            return response.blob()
+          })
+          .then(function (blob) {
+
+            var file = new File([blob], "Test download file", {
+              type: 'application/octet-stream'
+            });
+            var filesArray = [file];
+
+            if (navigator.canShare && navigator.canShare({
+                files: filesArray
+              })) {
+              navigator.share({
+                text: 'workUp.academy assignment',
+                files: filesArray,
+                title: 'workUp.academy Assignment',
+                url: 'www.workup.academy'
+              });
+            }
+          });
+      };
+
+      $('.downloadFile').on ('click', function (event) 
+      {  
+        if (checkIfIOS) {
+          // Stop the default downloading mechanism
+          event.preventDefault ();
+          event.stopImmediatePropagation ();
+
+          // Trigger the sharing mechanism
+          jsDownloadOverride (event.delegateTarget.href);
+        }
+      });
+
+      // Function to check if a user agent is iOS
+      var checkIfIOS = function iOS() {
+        return [
+            'iPad Simulator',
+            'iPhone Simulator',
+            'iPod Simulator',
+            'iPad',
+            'iPhone',
+            'iPod'
+          ].includes(navigator.platform)
+          // iPad on iOS 13 detection
+          ||
+          (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+      };
+
+      if (checkIfIOS) {
+        
+      }
+    });
   </script>
   {% endblock %}
