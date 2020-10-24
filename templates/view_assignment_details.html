@@ -237,6 +237,7 @@
   </div>
 
   <script src="/static/js/sortable-table.js"></script>
+  <script src="/static/js/lib/file-saver.js"></script>
 
   <script type="text/javascript">
     $(function () {
@@ -263,6 +264,8 @@
                 title: 'workUp.academy Assignment',
                 url: 'www.workup.academy'
               });
+            } else {
+              saveAs(blob, 'workUp assignment');
             }
           });
       };
