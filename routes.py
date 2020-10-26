@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, abort, current_app, session, Response
+from flask import render_template, flash, redirect, url_for, request, abort, current_app, session, Response, jsonify
 from flask_login import current_user, login_required
 from app import csrf
 
@@ -21,6 +21,27 @@ from app.assignments.formbuilder import formLoader
 
 from flask_weasyprint import HTML, render_pdf
 
+# Admin API route to save a user's grade
+@bp.route("/api/grade/save/<int:upload_id>/<assignment_grade>", methods=['POST'])
+@login_required
+def save_assignment_grade(upload_id, assignment_grade):
+	if app.models.is_admin(current_user.username):
+
+		# Get assignment and user details
+		upload = Upload.query.get(upload_id)
+		if upload is None: abort (404)
+		assignment_id = upload.assignment_id
+		if assignment_id is None: abort (404)
+		assignment_info = Assignment.query.get(assignment_id)
+		user_info = User.query.get(Upload.query.get(upload_id).user_id)
+		class_info = Turma.query.get(assignment_info.target_turma_id)
+
+		if app.classes.models.check_if_student_is_in_teachers_class (user_info.id, current_user.id):
+			app.assignments.models.grade_assignment_upload (upload_id, assignment_grade)
+			return jsonify({'success': 'Grade added successfully'})
+		
+		return jsonify({'error': 'This student is not registered in your class.'})
+	abort(403)
 
 # View created assignments status
 @bp.route("/view/", methods=['GET', 'POST'])
@@ -141,7 +162,6 @@ def download_assignment_uploads(assignment_id):
 			return response		
 	abort (403)
 	
-	
 
 # Admin page to set new assignment
 @bp.route("/create", methods=['GET', 'POST'])
@@ -158,6 +178,7 @@ def create_assignment():
 			return redirect(url_for('assignments.view_assignments'))
 		return render_template('assignment_form.html', title='Create Assignment', form=form)
 	abort(403)
+	
 	
 # Admin page to edit assignments
 @bp.route("/edit/<assignment_id>", methods=['GET', 'POST'])
@@ -350,15 +371,10 @@ def grade_assignment(upload_id):
 		
 		if form.validate_on_submit():
 			# Submit the grade
-			grade_object = AssignmentGrade(
-				upload_id = upload_id,
-				grade = form.grade.data,
-				user_id = current_user.id)
-			db.session.add(grade_object)
-			db.session.commit()
+			app.assignments.models.grade_assignment_upload (upload_id, form.grade.data)
 			
 			# Display a success message
-			flash('Work marked as ' + str(grade) + '.', 'success')
+			flash(user_info.username + ': ' + str(form.grade.data), 'success')
 			
 			# For this assignment (class), get a list of uploads that haven't been graded by current_user.id
 			uploads = Upload.query.join(User, Upload.user_id == User.id).filter(

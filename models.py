@@ -293,7 +293,6 @@ def delete_all_comments_from_user_id (user_id):
 			db.session.delete(comment)
 	db.session.commit()
 
-
 def delete_all_grades_from_user_id (user_id):
 	# Find the uploads that this user has made
 	uploads = Upload.query.filter_by (user_id = user_id).all()
@@ -303,7 +302,6 @@ def delete_all_grades_from_user_id (user_id):
 		for grade in grades:
 			db.session.delete (grade)
 	db.session.commit()
-
 
 def new_peer_review_from_form (form_contents, assignment_id):
 	# Check if user has any previous downloads with pending peer reviews
@@ -316,7 +314,6 @@ def new_peer_review_from_form (form_contents, assignment_id):
 	else:
 		return False
 		
-
 def check_if_assignment_is_over (assignment_id):
 	due_date = Assignment.query.get(assignment_id).due_date
 	due_datetime = datetime(due_date.year, due_date.month, due_date.day)
@@ -343,7 +340,6 @@ def last_incoming_peer_review_timestamp (user_id):
 		return arrow.get(latest_incoming_peer_review, tz.gettz('Asia/Hong_Kong')).humanize() 
 	else: return False	
 
-
 def download_assignment_task_file (assignment_id):
 	if db.session.query(Assignment, AssignmentTaskFile).join(
 		AssignmentTaskFile, Assignment.assignment_task_file_id ==  AssignmentTaskFile.id).filter(
@@ -359,3 +355,19 @@ def download_assignment_task_file (assignment_id):
 								   attachment_filename = result.AssignmentTaskFile.original_filename)
 	else:
 		return False
+
+# Method to attach a grade to an assignment. This will overwrite any existing grades
+def grade_assignment_upload (upload_id, grade):
+	# Is there already an existing grade?
+	existing_grade = AssignmentGrade.query.filter_by(upload_id = upload_id).first()
+	if existing_grade is not None:
+		existing_grade.grade = grade
+		db.session.commit ()
+	else:
+		# Submit the grade
+		grade_object = AssignmentGrade(
+			upload_id = upload_id,
+			grade = grade,
+			user_id = current_user.id)
+		db.session.add(grade_object)
+		db.session.commit()
