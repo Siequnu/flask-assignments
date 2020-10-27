@@ -14,7 +14,7 @@ import app.models
 
 from app import db
 from sqlalchemy import or_
-import json, zipfile, zipstream, os, datetime, uuid
+import json, zipfile, zipstream, os, datetime, uuid, re
 from pathlib import Path
 
 from app.assignments.formbuilder import formLoader
@@ -114,6 +114,54 @@ def view_assignment_details(assignment_id):
 			assignment_student_info = assignment_student_info,
 			assignment_id = assignment_id,
 			assignment_info = assignment_info
+			)
+	abort (403)
+
+
+# Admin route to replace an assignment task file
+@bp.route('/taskfile/replace/<assignment_id>', methods=['GET', 'POST'])
+@login_required
+def replace_assignment_task_file(assignment_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		assignment = Assignment.query.get (assignment_id)
+		if assignment is None: abort (404)
+
+		if app.classes.models.check_if_turma_id_belongs_to_a_teacher (assignment.target_turma_id, current_user.id) is False:
+			abort (403)
+
+		if assignment.assignment_task_file_id is not None:		
+			assignment_task_file = AssignmentTaskFile.query.get(assignment.assignment_task_file_id)
+		else:
+			assignment_task_file = None
+					
+		# If the form has been filled out and posted:
+		if request.method == 'POST':
+			if 'file' not in request.files:
+				flash('No file uploaded.', 'warning')
+				return redirect(request.url)
+			file = request.files['file']
+			if re.findall(r'[\u4e00-\u9fff]+', file.filename) != []:
+				# There are Chinese characters in the filename
+				flash('Your filename contains Chinese characters. Please use only English letters and numbers in your filename.', 'warning')
+				return redirect(request.url)
+			if file.filename == '':
+				flash('The filename is blank. Please rename the file.', 'warning')
+				return redirect(request.url)
+			if file and models.allowed_file_extension(file.filename):
+				
+				# Save the new file
+				app.assignments.models.update_assignment_task_file (assignment_id, file)
+				flash ('Assignment handout updated successfully', 'success')
+				return redirect(url_for('assignments.view_assignment_details', assignment_id = assignment_id))
+			else:
+				flash('You can not upload this kind of file. Please use a iWork, Office or PDF document.', 'warning')
+				return redirect(url_for('assignments.view_assignment_details', assignment_id = assignment_id))
+		else:
+			# Get all assignment info with due dates and humanised deadlines
+			return render_template(
+				'replace_assignment_task_file.html', 
+				assignment = assignment,
+				assignment_task_file = assignment_task_file
 			)
 	abort (403)
 

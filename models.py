@@ -228,6 +228,24 @@ def new_assignment_from_form (form):
 		db.session.add(assignment)
 		db.session.commit()
 
+def update_assignment_task_file (assignment_id, file):
+	assignment = Assignment.query.get(assignment_id)
+	
+	random_filename = app.files.models.save_file(file)
+	original_filename = app.files.models.get_secure_filename(file.filename)
+
+	assignment_task_file = AssignmentTaskFile (
+		original_filename=original_filename,
+		filename = random_filename,
+		user_id = current_user.id
+		)
+	db.session.add(assignment_task_file)
+	db.session.flush() # Access the assignment_task_file.id field from db
+
+	# Point the assignment object to the newly uploaded file
+	assignment.assignment_task_file_id=assignment_task_file.id
+	db.session.commit ()
+
 def delete_assignment_from_id (assignment_id):	
 	
 	# Delete all comments and comment uploads for those uploads

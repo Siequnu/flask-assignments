@@ -154,7 +154,12 @@
       <div class="dropdown-menu turma-dropdown">
         <a class="dropdown-item" href="{{url_for('assignments.edit_assignment', assignment_id = assignment.id)}}"><i
             class="fa fa-edit mr-1">
-          </i>Edit
+          </i>Edit assignment details
+        </a>
+
+        <a class="dropdown-item" href="{{url_for('assignments.replace_assignment_task_file', assignment_id = assignment.id)}}"><i
+          class="fa fa-cloud-upload-alt mr-1">
+          </i>Replace assignment handout
         </a>
 
         <a class="dropdown-item" href="{{url_for('assignments.close_assignment', assignment_id = assignment.id)}}"> <i
