@@ -4,15 +4,15 @@
   <br>
   <div class="container">
     <div class="row">
-      <div class="col-md-2">
+      <div class="col-md-2 col-sm-12">
         <a href="{{url_for('assignments.view_assignment_details', assignment_id = assignment.id)}}">
-           <button class="btn btn-light">
+           <button class="btn btn-light mb-3">
         <i class="fa fa-chevron-left">
         </i> Back 
         </button>
       </a>
   </div>
-  <div class="col-md-10">
+  <div class="col-md-10 col-sm-12">
     <h1><i class="fa fa-retweet mr-2"></i>Replace assignment handout
     </h1>
   </div>
@@ -24,7 +24,7 @@
     <div class="card-body">
       <div class="container">
         <div class="row">
-          <div class="col-2 text-center">
+          <div class="col-md-2 col-sm-12 text-center">
             <h1 class="display-4">
               <span class="badge badge-secondary">{{assignment['due_date'].strftime('%d')}}
               </span>
@@ -32,7 +32,7 @@
             <h2>{{assignment['due_date'].strftime('%b')|upper}}
             </h2>
           </div>
-          <div class="col-10">
+          <div class="col-md-10 col-sm-12">
             <h3 class="text">
               <strong>{{assignment['title']}}
               </strong>
@@ -46,7 +46,7 @@
               <a href="{{url_for('assignments.download_assignment_file', assignment_id = assignment['id'])}}">
                 <li class="list-inline-item">
                   <i class="fa fa-info-circle" aria-hidden="true">
-                  </i> {{ assignment_task_file['original_filename']}}
+                  </i> {{ assignment_task_file['original_filename']|truncate(30)}}
                 </li>
               </a>
               {% endif %}
