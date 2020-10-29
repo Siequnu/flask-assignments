@@ -3,52 +3,52 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10">
-            <br>
             <h1><i class="fa fa-comment mr-2"></i>{{title}}</h1>
             <hr>
-            <br>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                {% if comment_file_upload %}
-
-                <div class="col-xs-12 col-md-4">
-                    <h2>Graded work</h2>
-                    <br>
-
-                    <div class="library_card">
-                        <div class="img-library_card">
-                            {% set thumbnail_filename = comment_file_upload.filename.split('.') %}
-                            <img src="/static/thumbnails/{{thumbnail_filename[0]}}.jpeg" />
-                        </div>
-                        <div class="library_card-content">
-                            <p>{{comment_file_upload.original_filename|truncate(42)}}</p>
-                        </div>
-                        <div class="library_card-read-more">
-                            <a href="{{url_for('assignments.download_comment_file_upload', comment_file_upload_id = comment_file_upload.id)}}"
-                                class="btn btn-secondary btn-sm" role="button"><i class="fa fa-download"></i> View
-                                correction</a>
-                        </div>
-                    </div>
-
-                </div>
-
-                {% endif %}
-
-                <!-- Display the form -->
-                <div class="col-xs-12 col-md-6 col-sm-offset-3">
-                    <form method="{{form_method if form_method else 'POST'}}" action="{{form_action if form_action else ''}}">
-                        {% if do_not_display_csrf_token %}
-                        {% else %}
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                        {% endif %}
-                        {{ render_form|safe }}
-                    </form>
-
-                </div>
-                </row>
-            </div>
         </div>
     </div>
-    {% endblock %}
+
+    <div class="container">
+        <div class="row">
+            {% if comment_file_upload %}
+
+            <div class="col-xs-12 col-md-4">
+                <h2>Graded work</h2>
+                <br>
+
+                <div class="library_card">
+                    <div class="img-library_card">
+                        {% set thumbnail_filename = comment_file_upload.filename.split('.') %}
+                        <img src="/static/thumbnails/{{thumbnail_filename[0]}}.jpeg" />
+                    </div>
+                    <div class="library_card-content">
+                        <p>{{comment_file_upload.original_filename|truncate(42)}}</p>
+                    </div>
+                    <div class="library_card-read-more">
+                        <a href="{{url_for('assignments.download_comment_file_upload', comment_file_upload_id = comment_file_upload.id)}}"
+                            class="btn btn-secondary btn-sm" role="button"><i class="fa fa-download"></i> View
+                            correction</a>
+                    </div>
+                </div>
+
+            </div>
+
+            {% endif %}
+
+            <!-- Display the form -->
+            <div class="col-xs-12 col-md-6 col-sm-offset-3">
+                <form method="{{form_method if form_method else 'POST'}}"
+                    action="{{form_action if form_action else ''}}">
+                    {% if do_not_display_csrf_token %}
+                    {% else %}
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                    {% endif %}
+                    {{ render_form|safe }}
+                </form>
+
+            </div>
+            </row>
+        </div>
+    </div>
+</div>
+{% endblock %}
