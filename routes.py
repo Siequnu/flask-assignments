@@ -352,7 +352,16 @@ def create_open_review(upload_id):
 	assignment = Assignment.query.get(file_upload.assignment_id)
 	if assignment is None: abort (404)
 	
+	# Only students in this class or teachers managing this class can submit reviews
 	if app.classes.models.check_if_student_is_in_class (current_user.id, assignment.target_turma_id) is True or current_user.is_admin is True:
+		
+		# Security check for teacher
+		if app.models.is_admin(current_user.username) and current_user.is_superintendant == False:
+			assignment = Assignment.query.get(file_upload.assignment_id)
+			turma = Turma.query.get(assignment.target_turma_id)
+			if app.classes.models.check_if_turma_id_belongs_to_a_teacher (turma.id, current_user.id) is False: 
+				abort (403)
+		
 		peer_review_form_id = Assignment.query.join(
 			Upload, Upload.assignment_id == Assignment.id).filter(
 			Upload.id == upload_id).first().peer_review_form_id
@@ -459,6 +468,13 @@ def view_feedback_summary (upload_id):
 	# Security check (admin or file owner)
 	if current_user.id == models.get_file_owner_id (upload_id) or app.models.is_admin(current_user.username):
 		
+		# Security check for teacher
+		if app.models.is_admin(current_user.username) and current_user.is_superintendant == False:
+			assignment = Assignment.query.get(upload.assignment_id)
+			turma = Turma.query.get(assignment.target_turma_id)
+			if app.classes.models.check_if_turma_id_belongs_to_a_teacher (turma.id, current_user.id) is False: 
+				abort (403)
+
 		# Get the summary of the feedback
 		summary = app.assignments.models.get_feedback_summary (upload_id)
 		return render_template (
