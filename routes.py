@@ -762,6 +762,7 @@ def save():
 			
 			peer_review_form = PeerReviewForm()
 			peer_review_form.title = json_data['title']
+			peer_review_form.created_by_id = current_user.id
 			peer_review_form.description = json_data['description']
 			peer_review_form.serialised_form_data = json.dumps(json_data)
 			db.session.add(peer_review_form)

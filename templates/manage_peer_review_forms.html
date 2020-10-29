@@ -5,7 +5,7 @@
     <h1>Manage peer review forms</h1>
     <hr>
 
-    <a href="{{url_for('assignments.add_peer_review_form')}}" <button class="btn btn-primary"><i class="fa fa-plus-circle"></i> Create new form</button></a>
+    <a href="{{url_for('assignments.add_peer_review_form')}}" <button class="btn btn-outline-success"><i class="fa fa-plus-circle"></i> New feedback form</button></a>
     <div class="row">
         <div class="col-md-8">
             <br>
@@ -19,7 +19,7 @@
                                 <h3 class="text"><strong>{{form.title}}</strong></h3>
                                 <ul class="list-inline">
                                     <li class="list-inline-item"><i class="fa fa-calendar-check" aria-hidden="true"></i> Created {{form.timestamp.strftime('%b %d %Y')}}</li>
-                                    <li class="list-inline-item"><i class="fa fa-user" aria-hidden="true"></i> Created by {{form.created_by_id}}</li>
+                                    <li class="list-inline-item"><i class="fa fa-user" aria-hidden="true"></i> Created by {{form.user.username}}</li>
                                 </ul>
                                 <em>{{form.description}}</em>
                             </div>
