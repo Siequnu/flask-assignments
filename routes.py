@@ -101,21 +101,43 @@ def view_assignments(view = False):
 @bp.route("/view/<int:assignment_id>")
 @login_required
 def view_assignment_details(assignment_id):
-	if current_user.is_authenticated and app.models.is_admin(current_user.username):
-		assignment = Assignment.query.get (assignment_id)
-		if assignment is None: abort (404)
+	# Get the assignment
+	assignment = Assignment.query.get (assignment_id)
+	if assignment is None: abort (404)
 
+	# Get the class
+	turma = Turma.query.get(assignment.target_turma_id)
+	if turma is None: abort (404)
+	
+	# If this is teacher 
+	if app.models.is_admin(current_user.username):
 		if app.classes.models.check_if_turma_id_belongs_to_a_teacher (assignment.target_turma_id, current_user.id) is False:
 			abort (403)
+
+	# If this is a student
+	else:
+		if app.classes.models.check_if_student_is_in_class (current_user.id, turma.id) is False:
+			abort (403)
+
+	# Security checks passed, user is either a teacher of this class or a student in this class
 		
-		assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
-		assignment_info = app.assignments.models.get_assignment_info(assignment_id)
-		return render_template('view_assignment_details.html',
+	assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
+	assignment_info = app.assignments.models.get_assignment_info(assignment_id)
+	
+	if app.models.is_admin (current_user.username):
+		return render_template(
+			'view_assignment_details.html',
 			assignment_student_info = assignment_student_info,
 			assignment_id = assignment_id,
 			assignment_info = assignment_info
-			)
-	abort (403)
+		)
+	else:
+		return render_template(
+			'view_assignment_details_student.html',
+			assignment_student_info = assignment_student_info,
+			assignment_id = assignment_id,
+			assignment_info = assignment_info
+		)
 
 
 # Admin route to replace an assignment task file
@@ -295,7 +317,7 @@ def close_assignment(assignment_id):
 
 
 ############# Peer review routes
-# Display an empty review feedback form
+# Route used when using randomly assigned peer reviews
 @bp.route("/review/<assignment_id>", methods=['GET', 'POST'])
 def create_peer_review(assignment_id):
 	if request.method == 'POST':
@@ -320,7 +342,38 @@ def create_peer_review(assignment_id):
 		return render_template('form_builder_render.html', title='Submit peer review', render_form=render_form)
 		
 
-# Display an empty review feedback form
+# Form for creating a teacher review, i.e., with an added file_upload part
+@bp.route("/review/open/create/<upload_id>", methods=['GET', 'POST'])
+@login_required
+def create_open_review(upload_id):
+	file_upload = Upload.query.get(upload_id)
+	if file_upload is None: abort (404)
+
+	assignment = Assignment.query.get(file_upload.assignment_id)
+	if assignment is None: abort (404)
+	
+	if app.classes.models.check_if_student_is_in_class (current_user.id, assignment.target_turma_id) is True or current_user.is_admin is True:
+		peer_review_form_id = Assignment.query.join(
+			Upload, Upload.assignment_id == Assignment.id).filter(
+			Upload.id == upload_id).first().peer_review_form_id
+		form_data = PeerReviewForm.query.get(peer_review_form_id).serialised_form_data
+		form_loader = app.assignments.formbuilder.formLoader(
+			form_data, 
+			(url_for('assignments.create_open_review', upload_id=upload_id)))
+		render_form = form_loader.render_form()
+
+		if request.method == 'POST':
+			# Submit the review comment form 
+			form_contents = json.dumps(request.form)
+			new_comment_id = app.assignments.models.add_teacher_comment_to_upload(form_contents, upload_id)
+			flash('Open review submitted succesfully!', 'success')
+			return redirect(url_for('assignments.view_assignment_details', assignment_id = assignment.id))
+		
+		return render_template('form_builder_render.html', title='Submit peer review', render_form=render_form)
+	abort (403)
+
+
+# Form for creating a teacher review, i.e., with an added file_upload part
 @bp.route("/review/create/<upload_id>/teacher", methods=['GET', 'POST'])
 @login_required
 def create_teacher_review(upload_id):
@@ -394,6 +447,27 @@ def create_teacher_review(upload_id):
 			admin_file_upload = True)
 	abort (403)
 
+
+# Display a summary page from peer review data
+@bp.route('/feedback/summary/<upload_id>')
+@login_required
+def view_feedback_summary (upload_id):
+	# Get the uploads
+	upload = Upload.query.get(upload_id)
+	if upload is None: abort (404)
+
+	# Security check (admin or file owner)
+	if current_user.id == models.get_file_owner_id (upload_id) or app.models.is_admin(current_user.username):
+		
+		# Get the summary of the feedback
+		summary = app.assignments.models.get_feedback_summary (upload_id)
+		return render_template (
+			'view_feedback_summary.html',
+			upload = upload,
+			summary = summary
+			)
+	else:
+		abort (403)
 
 
 # Display an empty review feedback form

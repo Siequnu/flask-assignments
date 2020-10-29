@@ -211,17 +211,25 @@ def new_assignment_from_form (form):
 		file = form.assignment_task_file.data
 		random_filename = app.files.models.save_file(file)
 		original_filename = app.files.models.get_secure_filename(file.filename)
-		assignment_task_file = AssignmentTaskFile (original_filename=original_filename,
-											   filename = random_filename,
-											   user_id = current_user.id)
+		assignment_task_file = AssignmentTaskFile (
+			original_filename=original_filename,
+			filename = random_filename,
+			user_id = current_user.id
+		)
 		db.session.add(assignment_task_file)
 		db.session.flush() # Access the assignment_task_file.id field from db
 	
 	for turma_id in form.target_turmas.data:
-		assignment = Assignment(title=form.title.data, description=form.description.data, due_date=form.due_date.data,
-						target_turma_id=turma_id, created_by_id=current_user.id,
-						peer_review_necessary= form.peer_review_necessary.data,
-						peer_review_form_id=form.peer_review_form_id.data)
+		assignment = Assignment(
+			title=form.title.data, 
+			description=form.description.data, 
+			due_date=form.due_date.data,
+			target_turma_id=turma_id, 
+			created_by_id=current_user.id,
+			peer_review_necessary= form.peer_review_necessary.data,
+			open_peer_review= form.open_peer_review.data,
+			peer_review_form_id=form.peer_review_form_id.data)
+		
 		if form.assignment_task_file.data is not None:
 			assignment.assignment_task_file_id=assignment_task_file.id
 	
@@ -332,6 +340,99 @@ def new_peer_review_from_form (form_contents, assignment_id):
 	else:
 		return False
 		
+
+# Return an object with a summary of all feedback
+def get_feedback_summary (upload_id):
+	upload = Upload.query.get(upload_id)
+	
+	# Get the assignment, in order to get the feedback form
+	assignment = Assignment.query.get(upload.assignment_id)
+	peer_review_form = PeerReviewForm.query.get(assignment.peer_review_form_id)
+	form_data = json.loads(peer_review_form.serialised_form_data)
+
+	# Loop through form data and build a question and answer dictionar
+	question_and_answer_dict = {}
+	for field in form_data['fields']:
+		# Format the title ('Question two ' is saved as 'question_two_'
+		formatted_title = field['title'].lower().replace(' ', '_')
+		
+		# If this is a multiple choice field, get the choices
+		choices = []
+		if field['type'] == 'element-multiple-choice':
+			for choice in field['choices']:
+				choices.append ({
+					'title': choice['title'],
+					'count': 0
+				})
+
+		question_and_answer_dict[formatted_title] = {
+			'type': field['type'],
+			'beautified_title': field['title'],
+			'choices': choices,
+			'answers': [],
+			'analysis': []
+		}
+	
+	# Add the answers to each question
+	for comment, user in app.files.models.get_peer_reviews_from_upload_id (upload_id):
+		comment_data = json.loads (comment['comment'])
+		del comment_data['_csrf_token']
+		
+		for question, answer in comment_data.items():
+			
+			# If we already have this question in the dict, append the new answer
+			if question in question_and_answer_dict:
+				question_and_answer_dict[question]['answers'].append (answer)
+
+	# Loop through each question_title: {object} in the array
+	for question_title, question_object in question_and_answer_dict.items():
+		
+		# If the type is multiple choice
+		if question_object['type'] == 'element-multiple-choice':
+			
+			# For each answer title
+			for answer in question_object['answers']:
+				
+				# Find the matching title in choices
+				for question_choice in question_object['choices']:
+					if question_choice['title'] == answer:
+						
+						# Increment the counter
+						question_choice['count'] += 1
+
+			# All the answers have been counted, now analyse the stats
+			for question_choice in question_object['choices']:
+				total_choices = len(question_object['choices'])
+				total_answers = len(question_object['answers'])
+				
+				question_choice['percentage_of_total_answers'] = int(question_choice['count'] / total_answers * 100)
+
+			# Calculate the average choice by converting each choice to a value (i.e., 1-5)
+			choice_array = []
+			for question_index, question_choice in enumerate(question_object['choices']):
+				choice_index = question_index + 1 # i.e., start at 1, not 0
+				iterator = 0
+				while iterator < question_choice['count']:
+					choice_array.append (choice_index)
+					iterator += 1
+			
+			try:
+				question_object['analysis'] = sum(choice_array) / len(choice_array)
+			# i.e., most likely divide by zero error
+			except:
+				question_object['analysis'] = 0
+		
+		elif question_object['type'] == 'element-paragraph-text' or question_object['type'] == 'element-single-line-text':
+			concatenated_strings = ''
+			for answer in question_object['answers']:
+				concatenated_strings += answer + ', '
+			question_object['analysis'] = concatenated_strings
+
+	
+	print (question_and_answer_dict)
+	return question_and_answer_dict
+
+
 def check_if_assignment_is_over (assignment_id):
 	due_date = Assignment.query.get(assignment_id).due_date
 	due_datetime = datetime(due_date.year, due_date.month, due_date.day)

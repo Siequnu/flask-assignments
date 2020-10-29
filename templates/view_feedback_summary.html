@@ -1,0 +1,64 @@
+{% extends "header.html" %}
+{% block app_content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <a href="{{url_for('files.file_stats')}}"><button class="btn btn-light mb-4">
+          <i class="fa fa-chevron-left">
+          </i> Back
+        </button>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-md-4">
+      <h3><i class="fa fa-cloud-upload-alt mr-2"></i>Your work
+      </h3>
+      <br>
+      <div class="library_card">
+        <div class="img-library_card">
+          {% set thumbnail_filename = upload.filename.split('.') %}
+          <img src="/static/thumbnails/{{thumbnail_filename[0]}}.jpeg" />
+        </div>
+        <div class="library_card-content">
+          <p>{{upload.original_filename|truncate(20)}}
+          </p>
+        </div>
+        <div class="library_card-read-more">
+          <a href="{{url_for('files.download', file_id = upload.id)}}" class="btn btn-outline-info btn-sm"
+            role="button">
+            <i class="fa fa-download">
+            </i> Download
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+      <h3 class="mb-4"><i class="fa fa-comments mr-3"></i>Summary
+      </h3>
+      <ul>
+        {% for question_title, question_object in summary.items() %}
+        <li><h5 class="pt-3">{{question_object.beautified_title}}:</h5></li>
+
+        {% if question_object.type == 'element-single-line-text' %}
+        <p>{{question_object.analysis}}</p>
+
+        {% elif question_object.type == 'element-paragraph-text' %}
+        <p>{{question_object.analysis}}</p>
+
+        {% elif question_object.type == 'element-multiple-choice' %}
+        <p>Average: {{question_object.analysis}}</p>
+        <ul>
+          {% for question_choice in question_object.choices %}
+          <li>{{question_choice.title}}: {{question_choice.percentage_of_total_answers}}%</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
