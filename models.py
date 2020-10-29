@@ -428,8 +428,6 @@ def get_feedback_summary (upload_id):
 				concatenated_strings += answer + ', '
 			question_object['analysis'] = concatenated_strings
 
-	
-	print (question_and_answer_dict)
 	return question_and_answer_dict
 
 
