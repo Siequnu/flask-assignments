@@ -358,8 +358,9 @@ def get_feedback_summary (upload_id):
 	# Loop through form data and build a question and answer dictionar
 	question_and_answer_dict = {}
 	for field in form_data['fields']:
+		
 		# Format the title ('Question two ' is saved as 'question_two_'
-		formatted_title = field['title'].lower().replace(' ', '_')
+		formatted_title = field['title'].lower().replace(' ', '_').replace('(', '').replace(')', '').replace(',', '').replace('&', '')
 		
 		# If this is a multiple choice field, get the choices
 		choices = []
@@ -382,8 +383,11 @@ def get_feedback_summary (upload_id):
 	for comment, user in app.files.models.get_peer_reviews_from_upload_id (upload_id):
 		comment_data = json.loads (comment['comment'])
 		del comment_data['_csrf_token']
+
 		
+		print (question_and_answer_dict)
 		for question, answer in comment_data.items():
+			print (question, answer)
 			
 			# If we already have this question in the dict, append the new answer
 			if question in question_and_answer_dict:
@@ -410,7 +414,10 @@ def get_feedback_summary (upload_id):
 				total_choices = len(question_object['choices'])
 				total_answers = len(question_object['answers'])
 				
-				question_choice['percentage_of_total_answers'] = int(question_choice['count'] / total_answers * 100)
+				try:
+					question_choice['percentage_of_total_answers'] = int(question_choice['count'] / total_answers * 100)
+				except:
+					question_choice['percentage_of_total_answers'] = 0
 
 			# Calculate the average choice by converting each choice to a value (i.e., 1-5)
 			choice_array = []
