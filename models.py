@@ -383,11 +383,8 @@ def get_feedback_summary (upload_id):
 	for comment, user in app.files.models.get_peer_reviews_from_upload_id (upload_id):
 		comment_data = json.loads (comment['comment'])
 		del comment_data['_csrf_token']
-
 		
-		print (question_and_answer_dict)
 		for question, answer in comment_data.items():
-			print (question, answer)
 			
 			# If we already have this question in the dict, append the new answer
 			if question in question_and_answer_dict:
