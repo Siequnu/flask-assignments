@@ -360,7 +360,7 @@ def get_feedback_summary (upload_id):
 	for field in form_data['fields']:
 		
 		# Format the title ('Question two ' is saved as 'question_two_'
-		formatted_title = field['title'].lower().replace(' ', '_').replace('(', '').replace(')', '').replace(',', '').replace('&', '')
+		formatted_title = field['title'].lower().replace(' ', '_').replace('(', '').replace(')', '').replace(',', '').replace('&', '').replace('-', '')
 		
 		# If this is a multiple choice field, get the choices
 		choices = []
@@ -383,7 +383,6 @@ def get_feedback_summary (upload_id):
 	for comment, user in app.files.models.get_peer_reviews_from_upload_id (upload_id):
 		comment_data = json.loads (comment['comment'])
 		del comment_data['_csrf_token']
-		
 		for question, answer in comment_data.items():
 			
 			# If we already have this question in the dict, append the new answer
@@ -426,7 +425,7 @@ def get_feedback_summary (upload_id):
 					iterator += 1
 			
 			try:
-				question_object['analysis'] = sum(choice_array) / len(choice_array)
+				question_object['analysis'] = round(sum(choice_array) / len(choice_array), 1)
 			# i.e., most likely divide by zero error
 			except:
 				question_object['analysis'] = 0
