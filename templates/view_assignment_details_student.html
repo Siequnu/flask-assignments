@@ -133,7 +133,29 @@
   {% endfor %}
 
   <hr>
-  <h3>You can submit reviews for the following work:</h3>
+
+  <div class="row justify-content-left mb-2">
+    <div class="col-12 col-md-10 col-lg-8">
+      <form class="card">
+        <div class="card-body row no-gutters align-items-center">
+          <div class="col-auto">
+            <i class="fas fa-search h4 text-body">
+            </i>
+          </div>
+          <!--end of col-->
+          <div class="col">
+            <input id="myInput" class="form-control form-control-lg form-control-borderless" type="search"
+              placeholder="Search for students or uploads">
+          </div>
+          <!--end of col-->
+        </div>
+      </form>
+    </div>
+    <!--end of col-->
+  </div>
+
+  
+  <h3>You can submit reviews for the following students:</h3>
 
   <div class="table-responsive no-more-tables">
     <table summary="Student uploads for this task"
