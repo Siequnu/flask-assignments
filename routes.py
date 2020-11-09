@@ -342,7 +342,7 @@ def create_peer_review(assignment_id):
 		return render_template('form_builder_render.html', title='Submit peer review', render_form=render_form)
 		
 
-# Form for creating a teacher review, i.e., with an added file_upload part
+# Form for creating an open review, i.e., without any anonymising constraints
 @bp.route("/review/open/create/<upload_id>", methods=['GET', 'POST'])
 @login_required
 def create_open_review(upload_id):
