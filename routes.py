@@ -14,7 +14,7 @@ import app.models
 
 from app import db
 from sqlalchemy import or_
-import json, zipfile, zipstream, os, datetime, uuid, re
+import json, zipfile, zipstream, os, datetime, uuid, re, base64
 from pathlib import Path
 
 from app.assignments.formbuilder import formLoader
@@ -125,8 +125,14 @@ def view_assignment_details(assignment_id):
 	assignment_info = app.assignments.models.get_assignment_info(assignment_id)
 	
 	if app.models.is_admin (current_user.username):
+
+		# Generate redirect URL for after deleting file
+		redirect_url = url_for('assignments.view_assignment_details', assignment_id = assignment.id).encode('ascii')
+		redirect_url = base64.b64encode(redirect_url)
+
 		return render_template(
 			'view_assignment_details.html',
+			redirect_url = redirect_url,
 			assignment_student_info = assignment_student_info,
 			assignment_id = assignment_id,
 			assignment_info = assignment_info

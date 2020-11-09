@@ -289,7 +289,7 @@
                 </i> Review
               </button>
             </a>
-            <a href="{{url_for('files.delete_file', upload_id = user.upload.id)}}"><button
+            <a href="{{url_for('files.delete_file', upload_id = user.upload.id, redirect_url = redirect_url)}}"><button
                 class="btn btn-sm btn-outline-danger m-1">
                 <i class="fa fa-trash-alt">
                 </i> Delete
