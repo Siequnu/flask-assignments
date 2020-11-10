@@ -69,11 +69,15 @@ def get_assignment_info (assignment_id = False):
 # Returns array of all students in class with added assignment info if applicable
 def get_assignment_student_info (assignment_id):
 	assignment = Assignment.query.get(assignment_id)
+	
 	turma_id = assignment.target_turma_id
+	
 	students = db.session.query(User).join(
 		Enrollment, User.id == Enrollment.user_id).filter(
 		Enrollment.turma_id == turma_id).order_by(User.student_number.asc()).all()
+	
 	assignment_detail_info = []
+	
 	for student in students:
 		student_dict = student.__dict__
 		try:
@@ -82,13 +86,22 @@ def get_assignment_student_info (assignment_id):
 			Upload.assignment_id == assignment_id).first()
 		except:
 			pass
+
 		if student_dict['upload'] is not None:
 			student_dict['grade'] = AssignmentGrade.query.filter_by(upload_id = student_dict['upload'].id).first()
+		
 		try:
-			student_dict['comments'] = db.session.query(Comment).filter(
-			Comment.file_id == student_dict['upload'].id).filter(Comment.pending == 0).all()
+			student_dict['comments'] = db.session.query(Comment).filter(Comment.file_id == student_dict['upload'].id).filter(Comment.pending == 0).all()
 		except:
 			pass
+
+		# Check if the current user has already commented
+		student_dict['already_commented'] = False
+		if 'comments' in student_dict:
+			for comment in student_dict['comments']:
+				if comment.user_id == current_user.id:
+					student_dict['already_commented'] = True
+		
 		assignment_detail_info.append(student_dict)
 	return assignment_detail_info
 	

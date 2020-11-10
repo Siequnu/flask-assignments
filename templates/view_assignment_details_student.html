@@ -164,6 +164,7 @@
         <tr>
           <th><i class="fa fa-signature"></i></th>
           <th><i class="fa fa-comments"></i></th>
+          <th><i class="fa fa-check-circle"></i></th>
           <th><i class="fa fa-tools"></i></th>
         </tr>
       </thead>
@@ -189,6 +190,13 @@
               </button>
             </a>
             {% endif %}
+            {% endif %}
+          </td>
+          <td>
+            {% if user.already_commented == True %}
+              <button class="btn btn-sm btn-success disabled m-1"><i class="fa fa-check-circle"></i></button>
+            {% else %}
+            
             {% endif %}
           </td>
           <td>

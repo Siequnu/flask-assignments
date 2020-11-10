@@ -219,6 +219,7 @@
           <th><i class="fa fa-file-upload"></i></th>
           <th><i class="fa fa-clock"></i></th>
           <th><i class="fa fa-comments"></i></th>
+          <th><i class="fa fa-check-circle"></i></th>
           <th><i class="fa fa-star-half-alt"></i></th>
           <th><i class="fa fa-tools"></i></th>
         </tr>
@@ -259,6 +260,13 @@
               </button>
             </a>
             {% endif %}
+            {% endif %}
+          </td>
+          <td>
+            {% if user.already_commented == True %}
+              <button class="btn btn-sm btn-success disabled m-1"><i class="fa fa-check-circle"></i></button>
+            {% else %}
+            
             {% endif %}
           </td>
           <td>
