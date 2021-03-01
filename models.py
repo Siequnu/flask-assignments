@@ -5,6 +5,7 @@ import app.models
 from app import db
 from app.models import Upload, Download, Assignment, User, Comment, Turma, Enrollment, PeerReviewForm, CommentFileUpload
 from app.files import models
+from app.classes.models import get_teacher_classes_from_teacher_id
 
 from datetime import datetime, date
 from dateutil import tz
