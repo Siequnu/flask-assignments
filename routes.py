@@ -230,10 +230,19 @@ def download_assignment_uploads(assignment_id):
 				z.write(filepath, arcname = filename)
 		
 			response = Response(z, mimetype='application/zip')
+			
 			# Name the zip file with class and assignment names		
 			assignment = Assignment.query.get(assignment_id)
 			class_label = Turma.query.get(assignment.target_turma_id).turma_label
-			filename = class_label + ' - ' + assignment.title + '.zip'
+			
+			# Remove chinese characters from assignment title
+			stripped_title = ''
+			for character in assignment.title:
+   				stripped_title += character if len(character.encode(encoding='utf_8')) == 1 else ''
+			
+			filename = class_label + ' - ' + stripped_title + '.zip'
+			
+			
 			response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
 			return response		
 	abort (403)
