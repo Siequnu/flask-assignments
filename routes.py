@@ -12,7 +12,7 @@ from app.classes.models import AttendanceCode
 from wtforms import SubmitField
 import app.models
 
-from app import db
+from app import db, executor
 from sqlalchemy import or_
 import json, zipfile, zipstream, os, datetime, uuid, re, base64
 from pathlib import Path

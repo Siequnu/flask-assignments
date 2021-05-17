@@ -17,6 +17,7 @@ class AssignmentCreationForm(FlaskForm):
 	open_peer_review = BooleanField('Open peer review', default=False)
 	peer_review_form_id = SelectField('Feedback form', coerce=int, validators=[DataRequired()])
 	assignment_task_file = FileField(label='Assignment Task File')
+	email_students = BooleanField('Notify students by email', default=False)
 	new_assignment_form_submit = SubmitField('Create')
 	
 class TurmaCreationForm(FlaskForm):
