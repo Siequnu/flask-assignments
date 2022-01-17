@@ -120,7 +120,6 @@ def view_assignment_details(assignment_id):
 			abort (403)
 
 	# Security checks passed, user is either a teacher of this class or a student in this class
-		
 	assignment_student_info = app.assignments.models.get_assignment_student_info(assignment_id)
 	assignment_info = app.assignments.models.get_assignment_info(assignment_id)
 	
